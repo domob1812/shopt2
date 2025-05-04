@@ -1,4 +1,3 @@
-- Extra field for number of items / amount
 - Adding of items via input at the top.  When existing item is suggested and
   used, auto-set the shop.  Otherwise can select the shop explicitly
   in a dialog

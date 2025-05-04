@@ -8,6 +8,7 @@ class ShoppingListItem {
   String shopId;
   int orderIndex; // For ordering within the shopping list
   bool isAdHoc; // Indicates if this is an ad-hoc item (not pre-configured)
+  String quantity; // Quantity of the item to buy, including units
   
   ShoppingListItem({
     required this.id,
@@ -17,6 +18,7 @@ class ShoppingListItem {
     this.isChecked = false,
     this.orderIndex = 0,
     this.isAdHoc = false,
+    this.quantity = '',
   });
   
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class ShoppingListItem {
       isChecked: json['isChecked'] ?? false,
       orderIndex: json['orderIndex'] ?? 0,
       isAdHoc: json['isAdHoc'] ?? false,
+      quantity: json['quantity'] ?? '',
     );
   }
   
@@ -51,6 +54,7 @@ class ShoppingListItem {
       'isChecked': isChecked,
       'orderIndex': orderIndex,
       'isAdHoc': isAdHoc,
+      'quantity': quantity,
     };
   }
   
@@ -62,6 +66,7 @@ class ShoppingListItem {
     bool? isChecked,
     int? orderIndex,
     bool? isAdHoc,
+    String? quantity,
   }) {
     return ShoppingListItem(
       id: id ?? this.id,
@@ -71,6 +76,7 @@ class ShoppingListItem {
       isChecked: isChecked ?? this.isChecked,
       orderIndex: orderIndex ?? this.orderIndex,
       isAdHoc: isAdHoc ?? this.isAdHoc,
+      quantity: quantity ?? this.quantity,
     );
   }
 }

@@ -117,18 +117,87 @@ class ShoppingListScreen extends StatelessWidget {
           Provider.of<StorageService>(context, listen: false).toggleItemCheck(item.id);
         },
       ),
-      title: Text(
-        item.name,
-        style: TextStyle(
-          decoration: item.isChecked ? TextDecoration.lineThrough : null,
-          color: item.isChecked ? Colors.grey : Colors.black,
-        ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              item.name,
+              style: TextStyle(
+                decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                color: item.isChecked ? Colors.grey : Colors.black,
+              ),
+            ),
+          ),
+          if (item.quantity.isNotEmpty)
+            InkWell(
+              onTap: () => _showQuantityEditDialog(context, item),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  item.quantity,
+                  style: TextStyle(
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.bold,
+                    decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: () => _showQuantityEditDialog(context, item),
+              icon: const Icon(Icons.add_box_outlined, color: Colors.blue),
+              tooltip: 'Add quantity',
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(4.0),
+              splashRadius: 24.0,
+            ),
+        ],
       ),
       // Show a different indicator for ad-hoc items
       subtitle: item.isAdHoc ? const Text('Ad-hoc item', style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)) : null,
     );
   }
   
+  void _showQuantityEditDialog(BuildContext context, ShoppingListItem item) {
+    String quantity = item.quantity;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Quantity'),
+          content: TextField(
+            decoration: const InputDecoration(
+              labelText: 'Quantity',
+              hintText: 'e.g., 2 kg, 3 bottles, 500g, etc.',
+            ),
+            controller: TextEditingController(text: quantity),
+            onChanged: (value) {
+              quantity = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Provider.of<StorageService>(context, listen: false)
+                    .updateShoppingListItem(item.copyWith(quantity: quantity.trim()));
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showAddItemDialog(BuildContext context) {
     final storage = Provider.of<StorageService>(context, listen: false);
     final shops = storage.shops;
