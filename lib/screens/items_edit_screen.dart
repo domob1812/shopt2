@@ -69,13 +69,34 @@ class _ItemsEditScreenState extends State<ItemsEditScreen> {
                         },
                         itemBuilder: (context, index) {
                           final item = items[index];
+                          // Check if this item is on the shopping list
+                          final bool isOnShoppingList = storage.isItemOnShoppingList(item.id);
+                          
                           return ListTile(
                             key: ValueKey(item.id),
                             leading: const Icon(Icons.drag_handle),
                             title: Text(item.name),
+                            subtitle: isOnShoppingList 
+                                ? const Text('On shopping list', style: TextStyle(fontSize: 12, color: Colors.green)) 
+                                : null,
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // Add to shopping list button
+                                if (!isOnShoppingList)
+                                  IconButton(
+                                    icon: const Icon(Icons.add_shopping_cart),
+                                    onPressed: () {
+                                      storage.addConfiguredItemToShoppingList(item);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('${item.name} added to shopping list'),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    tooltip: 'Add to shopping list',
+                                  ),
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {

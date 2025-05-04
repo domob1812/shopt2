@@ -1,10 +1,8 @@
+- Show all shows, even if list is empty for them
 - Make shops ordered as well
 - Extra field for number of items / amount
 - Remove delete button on items themselves
 - Adding of items via input at the top.  When existing item is suggested and
   used, auto-set the shop.  Otherwise can select the shop explicitly
   in a dialog
-- Removing from main screen should not remove from item list
 - Adding on main screen should suggest items from item list
-- Adding on main screen should be possible for non-existing items, which would
-  then be added to the bottom of the main screen only
