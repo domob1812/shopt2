@@ -8,23 +8,52 @@ class ShopEditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final storage = Provider.of<StorageService>(context);
+    final shops = storage.shops;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Shops'),
+        bottom: shops.length > 1 ? PreferredSize(
+          preferredSize: const Size.fromHeight(30),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              'Drag shops to change their order',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ),
+        ) : null,
       ),
       body: Consumer<StorageService>(
         builder: (context, storage, child) {
           final shops = storage.shops;
           
-          return ListView.builder(
+          return ReorderableListView.builder(
             itemCount: shops.length,
+            onReorder: (oldIndex, newIndex) {
+              // Handle reordering logic
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              
+              // Create a new order list with the moved item at the new index
+              final List<String> newOrder = shops.map((s) => s.id).toList();
+              final String movedId = newOrder.removeAt(oldIndex);
+              newOrder.insert(newIndex, movedId);
+              
+              // Update the storage with the new order
+              storage.reorderShops(newOrder);
+            },
             itemBuilder: (context, index) {
               final shop = shops[index];
               return Card(
+                key: Key(shop.id),
                 margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: ListTile(
                   title: Text(shop.name),
                   subtitle: Text('${storage.getItemsForShop(shop.id).length} items'),
+                  leading: const Icon(Icons.drag_handle),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

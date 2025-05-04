@@ -1,7 +1,4 @@
-- Show all shows, even if list is empty for them
-- Make shops ordered as well
 - Extra field for number of items / amount
-- Remove delete button on items themselves
 - Adding of items via input at the top.  When existing item is suggested and
   used, auto-set the shop.  Otherwise can select the shop explicitly
   in a dialog

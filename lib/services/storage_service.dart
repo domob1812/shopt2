@@ -11,7 +11,12 @@ class StorageService extends ChangeNotifier {
   List<Item> _items = []; // Configured items
   List<ShoppingListItem> _shoppingList = []; // Items on the shopping list
   
-  List<Shop> get shops => _shops;
+  List<Shop> get shops {
+    // Return shops sorted by orderIndex
+    final sortedShops = [..._shops];
+    sortedShops.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+    return sortedShops;
+  }
   List<Item> get items => _items;
   List<ShoppingListItem> get shoppingList => _shoppingList;
   
@@ -49,6 +54,11 @@ class StorageService extends ChangeNotifier {
   
   // Shop CRUD operations
   Future<void> addShop(Shop shop) async {
+    // Set the orderIndex to be after the last shop
+    if (shop.orderIndex == 0) {
+      final maxOrderIndex = _shops.isEmpty ? -1 : _shops.map((s) => s.orderIndex).reduce((max, current) => max > current ? max : current);
+      shop = shop.copyWith(orderIndex: maxOrderIndex + 1);
+    }
     _shops.add(shop);
     await _saveData();
   }
@@ -159,6 +169,17 @@ class StorageService extends ChangeNotifier {
     await _saveData();
   }
   
+  // Reorder shops
+  Future<void> reorderShops(List<String> newOrder) async {
+    for (var i = 0; i < newOrder.length; i++) {
+      final shopIndex = _shops.indexWhere((shop) => shop.id == newOrder[i]);
+      if (shopIndex >= 0) {
+        _shops[shopIndex] = _shops[shopIndex].copyWith(orderIndex: i);
+      }
+    }
+    await _saveData();
+  }
+  
   // Get configured items for a specific shop, ordered by orderIndex
   List<Item> getItemsForShop(String shopId) {
     final shopItems = _items.where((i) => i.shopId == shopId).toList();
@@ -228,8 +249,8 @@ class StorageService extends ChangeNotifier {
   
   void _addDemoData() {
     // Demo shops
-    final grocery = Shop(id: DateTime.now().toString(), name: "Grocery Store");
-    final hardware = Shop(id: DateTime.now().add(Duration(seconds: 1)).toString(), name: "Hardware Store");
+    final grocery = Shop(id: DateTime.now().toString(), name: "Grocery Store", orderIndex: 0);
+    final hardware = Shop(id: DateTime.now().add(Duration(seconds: 1)).toString(), name: "Hardware Store", orderIndex: 1);
     
     _shops.addAll([grocery, hardware]);
     

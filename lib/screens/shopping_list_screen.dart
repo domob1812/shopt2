@@ -49,10 +49,6 @@ class ShoppingListScreen extends StatelessWidget {
               final shop = shops[index];
               final shoppingListItems = storage.getShoppingListForShop(shop.id);
               
-              if (shoppingListItems.isEmpty) {
-                return Container(); // Skip empty shops
-              }
-              
               return Card(
                 margin: const EdgeInsets.all(8.0),
                 child: Column(
@@ -85,7 +81,18 @@ class ShoppingListScreen extends StatelessWidget {
                       ),
                     ),
                     const Divider(),
-                    ...shoppingListItems.map((item) => _buildShoppingItem(context, item)).toList(),
+                    if (shoppingListItems.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: Text(
+                            'No items in this shop',
+                            style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                          ),
+                        ),
+                      )
+                    else
+                      ...shoppingListItems.map((item) => _buildShoppingItem(context, item)).toList(),
                   ],
                 ),
               );
@@ -119,12 +126,6 @@ class ShoppingListScreen extends StatelessWidget {
       ),
       // Show a different indicator for ad-hoc items
       subtitle: item.isAdHoc ? const Text('Ad-hoc item', style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)) : null,
-      trailing: IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () {
-          Provider.of<StorageService>(context, listen: false).removeFromShoppingList(item.id);
-        },
-      ),
     );
   }
   
