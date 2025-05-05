@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reorderables/reorderables.dart';
+
 import '../models/shop.dart';
 import '../models/item.dart';
 import '../services/storage_service.dart';
@@ -53,6 +53,7 @@ class _ItemsEditScreenState extends State<ItemsEditScreen> {
                 child: items.isEmpty
                     ? const Center(child: Text('No items in this shop yet'))
                     : ReorderableListView.builder(
+                        buildDefaultDragHandles: false,
                         itemCount: items.length,
                         onReorder: (oldIndex, newIndex) {
                           if (oldIndex < newIndex) {
@@ -74,7 +75,13 @@ class _ItemsEditScreenState extends State<ItemsEditScreen> {
                           
                           return ListTile(
                             key: ValueKey(item.id),
-                            leading: const Icon(Icons.drag_handle),
+                            leading: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: ReorderableDragStartListener(
+                                index: index,
+                                child: const Icon(Icons.drag_handle),
+                              ),
+                            ),
                             title: Text(item.name),
                             subtitle: isOnShoppingList 
                                 ? const Text('On shopping list', style: TextStyle(fontSize: 12, color: Colors.green)) 

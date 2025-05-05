@@ -30,6 +30,7 @@ class ShopEditScreen extends StatelessWidget {
           final shops = storage.shops;
           
           return ReorderableListView.builder(
+            buildDefaultDragHandles: false,
             itemCount: shops.length,
             onReorder: (oldIndex, newIndex) {
               // Handle reordering logic
@@ -53,7 +54,13 @@ class ShopEditScreen extends StatelessWidget {
                 child: ListTile(
                   title: Text(shop.name),
                   subtitle: Text('${storage.getItemsForShop(shop.id).length} items'),
-                  leading: const Icon(Icons.drag_handle),
+                  leading: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: ReorderableDragStartListener(
+                      index: index,
+                      child: const Icon(Icons.drag_handle),
+                    ),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
