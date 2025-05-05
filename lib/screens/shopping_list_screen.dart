@@ -6,6 +6,7 @@ import '../models/shopping_list_item.dart';
 import '../services/storage_service.dart';
 import 'shop_edit_screen.dart';
 import 'items_edit_screen.dart';
+import 'package:flutter/services.dart';
 
 class ShoppingListScreen extends StatelessWidget {
   const ShoppingListScreen({super.key});
@@ -13,6 +14,9 @@ class ShoppingListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController itemNameController = TextEditingController();
+    final FocusNode itemFocusNode = FocusNode();
+    TextEditingController autocompleteController = TextEditingController();
+    FocusNode autocompleteFocusNode = FocusNode();
     
     return Scaffold(
       appBar: AppBar(
@@ -43,18 +47,107 @@ class ShoppingListScreen extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: itemNameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter item name',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    onSubmitted: (value) {
-                      if (value.trim().isNotEmpty) {
-                        _handleItemAddition(context, value.trim());
-                        itemNameController.clear();
+                  child: Consumer<StorageService>(
+                    builder: (context, storage, child) {
+                      // Get all configured items across all shops
+                      List<Item> allItems = [];
+                      for (var shop in storage.shops) {
+                        allItems.addAll(storage.getItemsForShop(shop.id));
                       }
+                      
+                      // Sort items alphabetically for better user experience
+                      allItems.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+                      
+                      // Deduplicate items by name (keeping only the first occurrence)
+                      final itemNameSet = <String>{};
+                      final uniqueNameItems = allItems.where((item) {
+                        final isNew = !itemNameSet.contains(item.name.toLowerCase());
+                        if (isNew) {
+                          itemNameSet.add(item.name.toLowerCase());
+                        }
+                        return isNew;
+                      }).toList();
+                      
+                      return Autocomplete<String>(
+                        optionsBuilder: (TextEditingValue textEditingValue) {
+                          if (textEditingValue.text.isEmpty) {
+                            return const [];
+                          }
+                          return uniqueNameItems
+                            .where((Item item) {
+                              return item.name.toLowerCase().contains(
+                                textEditingValue.text.toLowerCase(),
+                              );
+                            })
+                            .map((item) => item.name)
+                            .toList();
+                        },
+                        displayStringForOption: (String option) => option,
+                        fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                          // Store references to the autocomplete controller and focus node
+                          // so we can access them in onSelected
+                          autocompleteController = controller;
+                          autocompleteFocusNode = focusNode;
+                          
+                          // Update the controllers to use the ones from Autocomplete
+                          // This is needed to keep them in sync with the Autocomplete widget
+                          itemNameController.text = controller.text;
+                          controller.addListener(() {
+                            itemNameController.text = controller.text;
+                          });
+                          
+                          return TextField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter item name',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            onSubmitted: (value) {
+                              if (value.trim().isNotEmpty) {
+                                _handleItemAddition(context, value.trim());
+                                controller.clear();
+                                onFieldSubmitted();
+                              }
+                            },
+                          );
+                        },
+                        onSelected: (String selectedItemName) {
+                          // When an option is selected from the dropdown, use the same logic as the add button
+                          _handleItemAddition(context, selectedItemName);
+                          // Clear both controllers to ensure the input box is empty
+                          itemNameController.clear();
+                          autocompleteController.clear();  // Clear the autocomplete's controller
+                          // Hide keyboard when an item is selected
+                          FocusScope.of(context).unfocus();
+                        },
+                        optionsViewBuilder: (context, onSelected, options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4.0,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxHeight: 200),
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(8.0),
+                                  shrinkWrap: true,
+                                  itemCount: options.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    final String itemName = options.elementAt(index);
+                                    return ListTile(
+                                      title: Text(itemName),
+                                      onTap: () {
+                                        onSelected(itemName);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                   ),
                 ),
@@ -66,6 +159,9 @@ class ShoppingListScreen extends StatelessWidget {
                     if (itemNameController.text.trim().isNotEmpty) {
                       _handleItemAddition(context, itemNameController.text.trim());
                       itemNameController.clear();
+                      autocompleteController.clear();  // Also clear the autocomplete controller
+                      // Hide keyboard
+                      FocusScope.of(context).unfocus();
                     }
                   },
                 ),
