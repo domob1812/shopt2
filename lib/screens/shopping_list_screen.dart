@@ -12,6 +12,8 @@ class ShoppingListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController itemNameController = TextEditingController();
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping List'),
@@ -33,78 +35,114 @@ class ShoppingListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<StorageService>(
-        builder: (context, storage, child) {
-          final shops = storage.shops;
-          
-          if (shops.isEmpty) {
-            return const Center(
-              child: Text('No shops added yet! Tap the shop icon to add one.'),
-            );
-          }
-          
-          return ListView.builder(
-            itemCount: shops.length,
-            itemBuilder: (context, index) {
-              final shop = shops[index];
-              final shoppingListItems = storage.getShoppingListForShop(shop.id);
-              
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        children: [
+          // Add item input bar at the top
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: itemNameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter item name',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    onSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        _handleItemAddition(context, value.trim());
+                        itemNameController.clear();
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () {
+                    if (itemNameController.text.trim().isNotEmpty) {
+                      _handleItemAddition(context, itemNameController.text.trim());
+                      itemNameController.clear();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Main content
+          Expanded(
+            child: Consumer<StorageService>(
+              builder: (context, storage, child) {
+                final shops = storage.shops;
+                
+                if (shops.isEmpty) {
+                  return const Center(
+                    child: Text('No shops added yet! Tap the shop icon to add one.'),
+                  );
+                }
+                
+                return ListView.builder(
+                  itemCount: shops.length,
+                  itemBuilder: (context, index) {
+                    final shop = shops[index];
+                    final shoppingListItems = storage.getShoppingListForShop(shop.id);
+                    
+                    return Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            shop.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  shop.name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ItemsEditScreen(shopId: shop.id),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ItemsEditScreen(shopId: shop.id),
+                          const Divider(),
+                          if (shoppingListItems.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Center(
+                                child: Text(
+                                  'No items in this shop',
+                                  style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            )
+                          else
+                            ...shoppingListItems.map((item) => _buildShoppingItem(context, item)).toList(),
                         ],
                       ),
-                    ),
-                    const Divider(),
-                    if (shoppingListItems.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Center(
-                          child: Text(
-                            'No items in this shop',
-                            style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
-                          ),
-                        ),
-                      )
-                    else
-                      ...shoppingListItems.map((item) => _buildShoppingItem(context, item)).toList(),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddItemDialog(context);
-        },
-        child: const Icon(Icons.add),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -154,8 +192,8 @@ class ShoppingListScreen extends StatelessWidget {
             ),
         ],
       ),
-      // Show a different indicator for ad-hoc items
-      subtitle: item.isAdHoc ? const Text('Ad-hoc item', style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)) : null,
+      // No subtitle needed for ad-hoc items anymore
+      subtitle: null,
     );
   }
   
@@ -198,7 +236,7 @@ class ShoppingListScreen extends StatelessWidget {
     );
   }
 
-  void _showAddItemDialog(BuildContext context) {
+  void _handleItemAddition(BuildContext context, String itemName) {
     final storage = Provider.of<StorageService>(context, listen: false);
     final shops = storage.shops;
     
@@ -211,131 +249,71 @@ class ShoppingListScreen extends StatelessWidget {
       return;
     }
     
-    String selectedShopId = shops.first.id;
-    String itemName = '';
-    bool useExistingItem = true; // Toggle between configured and ad-hoc items
-    List<Item> configuredItems = [];
-    Item? selectedItem;
+    // Find all items across all shops that match the entered name
+    List<Item> matchingItems = [];
+    for (var shop in shops) {
+      final shopItems = storage.getItemsForShop(shop.id);
+      final matches = shopItems.where(
+        (item) => item.name.toLowerCase() == itemName.toLowerCase()
+      ).toList();
+      matchingItems.addAll(matches);
+    }
+    
+    // Case 1: Exact match found in exactly one shop
+    if (matchingItems.length == 1) {
+      storage.addConfiguredItemToShoppingList(matchingItems.first);
+      return;
+    }
+    
+    // Case 2: Multiple matching items OR no matches
+    // Show dialog to select which shop to add the item to
+    _showShopSelectionDialog(context, itemName, matchingItems);
+  }
+  
+  void _showShopSelectionDialog(BuildContext context, String itemName, List<Item> matchingItems) {
+    final storage = Provider.of<StorageService>(context, listen: false);
+    final shops = storage.shops;
     
     showDialog(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            // Get available configured items for the selected shop that aren't already on the list
-            configuredItems = storage.getItemsForShop(selectedShopId)
-                .where((item) => !storage.isItemOnShoppingList(item.id))
-                .toList();
-            
-            // Reset selected item if needed
-            if (selectedItem == null || selectedItem!.shopId != selectedShopId) {
-              selectedItem = configuredItems.isNotEmpty ? configuredItems.first : null;
-            }
-            
-            return AlertDialog(
-              title: const Text('Add Item to Shopping List'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    value: selectedShopId,
-                    decoration: const InputDecoration(labelText: 'Shop'),
-                    items: shops.map((shop) {
-                      return DropdownMenuItem<String>(
-                        value: shop.id,
-                        child: Text(shop.name),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedShopId = value!;
-                        selectedItem = null; // Reset selected item
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text('Item type:'),
-                      ),
-                      ChoiceChip(
-                        label: Text('Configured'),
-                        selected: useExistingItem,
-                        onSelected: (selected) {
-                          setState(() {
-                            useExistingItem = selected;
-                          });
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      ChoiceChip(
-                        label: Text('Ad-hoc'),
-                        selected: !useExistingItem,
-                        onSelected: (selected) {
-                          setState(() {
-                            useExistingItem = !selected;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  if (useExistingItem) 
-                    // Show dropdown of available configured items
-                    configuredItems.isEmpty
-                      ? const Text('No available configured items', style: TextStyle(color: Colors.red))
-                      : DropdownButtonFormField<String>(
-                          value: selectedItem?.id,
-                          decoration: const InputDecoration(labelText: 'Select Item'),
-                          items: configuredItems.map((item) {
-                            return DropdownMenuItem<String>(
-                              value: item.id,
-                              child: Text(item.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedItem = configuredItems.firstWhere((item) => item.id == value);
-                            });
-                          },
-                        )
-                  else
-                    // Show text field for ad-hoc item
-                    TextField(
-                      decoration: const InputDecoration(labelText: 'Item Name'),
-                      onChanged: (value) {
-                        itemName = value;
-                      },
-                    ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
+        return AlertDialog(
+          title: const Text('Select Shop'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: shops.length,
+              itemBuilder: (context, index) {
+                final shop = shops[index];
+                // Check if this shop has a matching item
+                final hasMatchingItem = matchingItems.any((item) => item.shopId == shop.id);
+                
+                return ListTile(
+                  title: Text(shop.name),
+                  onTap: () {
+                    // If we have a matching configured item, use it
+                    if (hasMatchingItem) {
+                      final matchingItem = matchingItems.firstWhere((item) => item.shopId == shop.id);
+                      storage.addConfiguredItemToShoppingList(matchingItem);
+                    } else {
+                      // Otherwise add as ad-hoc item
+                      storage.addAdHocItemToShoppingList(itemName, shop.id);
+                    }
                     Navigator.pop(context);
                   },
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (useExistingItem) {
-                      if (selectedItem != null) {
-                        storage.addConfiguredItemToShoppingList(selectedItem!);
-                        Navigator.pop(context);
-                      }
-                    } else {
-                      if (itemName.trim().isNotEmpty) {
-                        storage.addAdHocItemToShoppingList(itemName.trim(), selectedShopId);
-                        Navigator.pop(context);
-                      }
-                    }
-                  },
-                  child: const Text('Add'),
-                ),
-              ],
-            );
-          },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
         );
       },
     );
