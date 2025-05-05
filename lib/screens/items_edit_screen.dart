@@ -39,16 +39,6 @@ class _ItemsEditScreenState extends State<ItemsEditScreen> {
           ),
           body: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Drag items to reorder them as they appear in the shop',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ),
               Expanded(
                 child: items.isEmpty
                     ? const Center(child: Text('No items in this shop yet'))
@@ -73,50 +63,50 @@ class _ItemsEditScreenState extends State<ItemsEditScreen> {
                           // Check if this item is on the shopping list
                           final bool isOnShoppingList = storage.isItemOnShoppingList(item.id);
                           
-                          return ListTile(
+                          return ReorderableDragStartListener(
                             key: ValueKey(item.id),
-                            leading: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: ReorderableDragStartListener(
-                                index: index,
-                                child: const Icon(Icons.drag_handle),
+                            index: index,
+                            child: ListTile(
+                              leading: const Icon(Icons.drag_handle),
+                              title: MouseRegion(
+                                cursor: SystemMouseCursors.grab,
+                                child: Text(item.name),
                               ),
-                            ),
-                            title: Text(item.name),
-                            subtitle: isOnShoppingList 
+                              subtitle: isOnShoppingList 
                                 ? const Text('On shopping list', style: TextStyle(fontSize: 12, color: Colors.green)) 
                                 : null,
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Add to shopping list button
-                                if (!isOnShoppingList)
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Add to shopping list button
+                                  if (!isOnShoppingList)
+                                    IconButton(
+                                      icon: const Icon(Icons.add_shopping_cart),
+                                      onPressed: () {
+                                        storage.addConfiguredItemToShoppingList(item);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('${item.name} added to shopping list'),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                      tooltip: 'Add to shopping list',
+                                    ),
                                   IconButton(
-                                    icon: const Icon(Icons.add_shopping_cart),
+                                    icon: const Icon(Icons.edit),
                                     onPressed: () {
-                                      storage.addConfiguredItemToShoppingList(item);
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('${item.name} added to shopping list'),
-                                          duration: const Duration(seconds: 2),
-                                        ),
-                                      );
+                                      _showEditItemDialog(context, item);
                                     },
-                                    tooltip: 'Add to shopping list',
                                   ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    _showEditItemDialog(context, item);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    storage.deleteItem(item.id);
-                                  },
-                                ),
-                              ],
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      storage.deleteItem(item.id);
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

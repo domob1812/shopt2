@@ -14,16 +14,6 @@ class ShopEditScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Shops'),
-        bottom: shops.length > 1 ? PreferredSize(
-          preferredSize: const Size.fromHeight(30),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Drag shops to change their order',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ),
-        ) : null,
       ),
       body: Consumer<StorageService>(
         builder: (context, storage, child) {
@@ -48,35 +38,35 @@ class ShopEditScreen extends StatelessWidget {
             },
             itemBuilder: (context, index) {
               final shop = shops[index];
-              return Card(
+              return ReorderableDragStartListener(
                 key: Key(shop.id),
-                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: ListTile(
-                  title: Text(shop.name),
-                  subtitle: Text('${storage.getItemsForShop(shop.id).length} items'),
-                  leading: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: ReorderableDragStartListener(
-                      index: index,
-                      child: const Icon(Icons.drag_handle),
+                index: index,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: ListTile(
+                    title: MouseRegion(
+                      cursor: SystemMouseCursors.grab,
+                      child: Text(shop.name),
                     ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          _showEditShopDialog(context, shop);
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _confirmDeleteShop(context, shop);
-                        },
-                      ),
-                    ],
+                    subtitle: Text('${storage.getItemsForShop(shop.id).length} items'),
+                    leading: const Icon(Icons.drag_handle),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            _showEditShopDialog(context, shop);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            _confirmDeleteShop(context, shop);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

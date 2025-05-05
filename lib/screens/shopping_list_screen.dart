@@ -155,42 +155,48 @@ class ShoppingListScreen extends StatelessWidget {
           Provider.of<StorageService>(context, listen: false).toggleItemCheck(item.id);
         },
       ),
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              item.name,
-              style: TextStyle(
-                decoration: item.isChecked ? TextDecoration.lineThrough : null,
-                color: item.isChecked ? Colors.grey : Colors.black,
-              ),
-            ),
-          ),
-          if (item.quantity.isNotEmpty)
-            InkWell(
-              onTap: () => _showQuantityEditDialog(context, item),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  item.quantity,
-                  style: TextStyle(
-                    color: Colors.blue[700],
-                    fontWeight: FontWeight.bold,
-                    decoration: item.isChecked ? TextDecoration.lineThrough : null,
-                  ),
+      title: InkWell(
+        onTap: () {
+          // Toggle checkbox when tapping on item name
+          Provider.of<StorageService>(context, listen: false).toggleItemCheck(item.id);
+        },
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                item.name,
+                style: TextStyle(
+                  decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                  color: item.isChecked ? Colors.grey : Colors.black,
                 ),
               ),
-            )
-          else
-            IconButton(
-              onPressed: () => _showQuantityEditDialog(context, item),
-              icon: const Icon(Icons.add_box_outlined, color: Colors.blue),
-              tooltip: 'Add quantity',
-              constraints: const BoxConstraints(),
-              padding: const EdgeInsets.all(4.0),
-              splashRadius: 24.0,
             ),
-        ],
+            if (item.quantity.isNotEmpty)
+              InkWell(
+                onTap: () => _showQuantityEditDialog(context, item),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    item.quantity,
+                    style: TextStyle(
+                      color: Colors.blue[700],
+                      fontWeight: FontWeight.bold,
+                      decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                ),
+              )
+            else
+              IconButton(
+                onPressed: () => _showQuantityEditDialog(context, item),
+                icon: const Icon(Icons.add_box_outlined, color: Colors.blue),
+                tooltip: 'Add quantity',
+                constraints: const BoxConstraints(),
+                padding: const EdgeInsets.all(4.0),
+                splashRadius: 24.0,
+              ),
+          ],
+        ),
       ),
       // No subtitle needed for ad-hoc items anymore
       subtitle: null,
