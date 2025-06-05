@@ -1,0 +1,9 @@
+Initial release of Shopt.
+
+Features:
+• Group shopping items by shop for organized shopping trips
+• Check off items as you shop them
+• Remove completed items with a single tap
+• Manage your list of shops
+• Reorder items within each shop to match your shopping route
+• Clean, intuitive Material Design interface
