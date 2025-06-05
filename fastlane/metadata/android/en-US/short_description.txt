@@ -1,0 +1,1 @@
+A simple shopping list app with shop grouping and item ordering.

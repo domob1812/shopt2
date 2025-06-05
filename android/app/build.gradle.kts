@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "eu.domob.shopt2"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = project.findProperty("android.ndkVersion") as String? ?: flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -32,9 +32,9 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // F-Droid handles signing - keep it simple
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

@@ -1,6 +1,6 @@
 <manifest package="eu.domob.shopt2" xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="shopt"
+        android:label="Shopt"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

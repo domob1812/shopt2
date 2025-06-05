@@ -1,9 +1,11 @@
-name: shopt
+name: Shopt
 description: A simple shopping list app with shop grouping and item ordering.
+homepage: https://github.com/domob1812/shopt2
+issue_tracker: https://github.com/domob1812/shopt2/issues
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: ">=2.19.0 <4.0.0"

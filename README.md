@@ -1,4 +1,4 @@
-# ShopT - A Simple Shopping List App
+# Shopt - A Simple Shopping List App
 
 A Flutter-based shopping list app with these features:
 
