@@ -20,6 +20,8 @@ android {
     }
 
     defaultConfig {
+        // Use the standard Flutter application to avoid PlayStoreSplit integration
+        manifestPlaceholders["applicationName"] = "io.flutter.embedding.android.FlutterApplication"
         applicationId = "eu.domob.shopt2"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -32,8 +34,12 @@ android {
     buildTypes {
         release {
             // F-Droid handles signing - keep it simple
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
