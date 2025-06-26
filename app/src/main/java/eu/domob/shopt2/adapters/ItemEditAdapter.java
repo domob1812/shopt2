@@ -20,7 +20,6 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
     public interface OnItemEditListener {
         void onEditItem(Item item);
         void onDeleteItem(Item item);
-        void onAddToShoppingList(Item item);
         void onItemMoved(int fromPosition, int toPosition);
     }
 
@@ -80,7 +79,6 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
         private TextView tvItemName;
         private TextView tvOnShoppingList;
         private ImageView ivDragHandle;
-        private ImageButton btnAddToShoppingList;
         private ImageButton btnEditItem;
         private ImageButton btnDeleteItem;
 
@@ -89,7 +87,6 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvOnShoppingList = itemView.findViewById(R.id.tvOnShoppingList);
             ivDragHandle = itemView.findViewById(R.id.ivDragHandle);
-            btnAddToShoppingList = itemView.findViewById(R.id.btnAddToShoppingList);
             btnEditItem = itemView.findViewById(R.id.btnEditItem);
             btnDeleteItem = itemView.findViewById(R.id.btnDeleteItem);
         }
@@ -101,17 +98,9 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
             boolean isOnShoppingList = databaseHelper.isItemOnShoppingList(item.getId());
             if (isOnShoppingList) {
                 tvOnShoppingList.setVisibility(View.VISIBLE);
-                btnAddToShoppingList.setVisibility(View.GONE);
             } else {
                 tvOnShoppingList.setVisibility(View.GONE);
-                btnAddToShoppingList.setVisibility(View.VISIBLE);
             }
-
-            btnAddToShoppingList.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onAddToShoppingList(item);
-                }
-            });
 
             btnEditItem.setOnClickListener(v -> {
                 if (listener != null) {

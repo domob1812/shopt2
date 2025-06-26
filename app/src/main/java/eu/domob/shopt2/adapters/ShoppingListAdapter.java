@@ -112,6 +112,15 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                     listener.onQuantityClicked(item);
                 }
             });
+
+            // Make item name clickable to toggle checked state
+            tvItemName.setOnClickListener(v -> {
+                boolean newCheckedState = !item.isChecked();
+                cbItemChecked.setChecked(newCheckedState);
+                if (listener != null) {
+                    listener.onItemChecked(item, newCheckedState);
+                }
+            });
         }
     }
 }

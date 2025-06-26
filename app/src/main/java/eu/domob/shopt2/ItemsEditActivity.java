@@ -172,19 +172,7 @@ public class ItemsEditActivity extends AppCompatActivity implements ItemEditAdap
         showDeleteItemDialog(item);
     }
 
-    @Override
-    public void onAddToShoppingList(Item item) {
-        // Check if already on shopping list
-        if (databaseHelper.isItemOnShoppingList(item.getId())) {
-            Toast.makeText(this, item.getName() + " is already on the shopping list", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        ShoppingListItem shoppingItem = ShoppingListItem.fromItem(item);
-        databaseHelper.addToShoppingList(shoppingItem);
-        Toast.makeText(this, item.getName() + " added to shopping list", Toast.LENGTH_SHORT).show();
-        loadData(); // Refresh to update the UI
-    }
 
     @Override
     public void onItemMoved(int fromPosition, int toPosition) {

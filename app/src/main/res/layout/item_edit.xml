@@ -47,17 +47,6 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/btnAddToShoppingList"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="1dp"
-        android:src="@drawable/ic_add_shopping_cart"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/add_to_shopping_list"
-        android:tint="@color/gray"
-        android:visibility="visible" />
-
-    <ImageButton
         android:id="@+id/btnEditItem"
         android:layout_width="36dp"
         android:layout_height="36dp"
