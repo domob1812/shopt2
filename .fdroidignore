@@ -1,0 +1,26 @@
+# F-Droid ignore file
+# Files and directories to ignore during F-Droid builds
+
+# Build artifacts
+app/build/
+build/
+.gradle/
+
+# IDE files
+.idea/
+*.iml
+
+# Local configuration
+local.properties
+
+# Version control
+.git/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Icon generation
+create_icons.sh
+icon.png

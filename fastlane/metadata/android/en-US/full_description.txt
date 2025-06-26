@@ -1,0 +1,17 @@
+Shopt is a simple and efficient shopping list app that helps you organize your
+shopping by grouping items by shop and ordering the items within each shop by
+how you will walk by them.
+
+Features:
+• Group shopping items by shop for efficient shopping trips
+• Check off items as you shop them
+• Remove completed items with one tap
+• Edit and manage your list of shops
+• Edit and reorder items within each shop
+• Custom item ordering matching your shopping route
+• Clean, intuitive interface
+• Works completely offline - no internet required
+• No ads, no tracking, no unnecessary permissions
+
+Perfect for anyone who wants a straight-forward shopping list app without
+complexity or privacy concerns.

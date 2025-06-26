@@ -28,6 +28,9 @@ declare -A SIZES=(
 # Base directory for resources
 RES_DIR="app/src/main/res"
 
+# Fastlane directory for F-Droid
+FASTLANE_DIR="fastlane/metadata/android/en-US/images"
+
 # Remove old XML files and create foreground PNG files
 for density in "${!SIZES[@]}"; do
     size=${SIZES[$density]}
@@ -50,12 +53,23 @@ for density in "${!SIZES[@]}"; do
     echo "  Created $dir/ic_launcher.png"
 done
 
+# Create F-Droid icon for fastlane metadata
+echo "Creating F-Droid icon for fastlane..."
+
+# Create fastlane images directory if it doesn't exist
+mkdir -p "$FASTLANE_DIR"
+
+# Create 512x512 icon for F-Droid (with white background)
+convert -size 512x512 xc:white icon.png -resize 512x512 -composite "$FASTLANE_DIR/icon.png"
+echo "  Created $FASTLANE_DIR/icon.png (512x512)"
+
 echo ""
 echo "All icons created successfully!"
 echo ""
 echo "Summary:"
 echo "- Foreground icons (for adaptive icons): ic_launcher_foreground.png"
 echo "- Legacy icons (with white background): ic_launcher.png"
+echo "- F-Droid icon (512x512): fastlane/metadata/android/en-US/images/icon.png"
 echo "- Background is already set to white in ic_launcher_background.xml"
 echo ""
-echo "Your app is now ready with the new custom icons!"
+echo "Your app is now ready with the new custom icons and F-Droid metadata!"
