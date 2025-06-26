@@ -96,13 +96,21 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             addItemToShoppingList();
             return true;
         });
+        
+        // Add item when clicking on autocomplete suggestion
+        etItemName.setOnItemClickListener((parent, view, position, id) -> {
+            addItemToShoppingList();
+        });
     }
 
     private void updateAutoComplete() {
         List<Item> allItems = databaseHelper.getAllItems();
         List<String> itemNames = new ArrayList<>();
         for (Item item : allItems) {
-            itemNames.add(item.getName());
+            String itemName = item.getName();
+            if (!itemNames.contains(itemName)) {
+                itemNames.add(itemName);
+            }
         }
         
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
@@ -122,32 +130,45 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             return;
         }
 
-        // Find if this item already exists in any shop
+        // Find all items with this name across all shops
         List<Item> allItems = databaseHelper.getAllItems();
-        Item existingItem = null;
+        List<Item> matchingItems = new ArrayList<>();
         for (Item item : allItems) {
             if (item.getName().equalsIgnoreCase(itemName)) {
-                existingItem = item;
-                break;
+                matchingItems.add(item);
             }
         }
 
-        if (existingItem != null) {
-            // Check if already on shopping list
-            if (databaseHelper.isItemOnShoppingList(existingItem.getId())) {
+        if (!matchingItems.isEmpty()) {
+            // Filter out items that are already on the shopping list
+            List<Item> availableItems = new ArrayList<>();
+            for (Item item : matchingItems) {
+                if (!databaseHelper.isItemOnShoppingList(item.getId())) {
+                    availableItems.add(item);
+                }
+            }
+            
+            if (availableItems.isEmpty()) {
+                // All matching items are already on the shopping list
                 Toast.makeText(this, itemName + " is already on the shopping list", Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
                 return;
             }
             
-            // Add existing item to shopping list
-            ShoppingListItem shoppingItem = ShoppingListItem.fromItem(existingItem);
-            databaseHelper.addToShoppingList(shoppingItem);
-            Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
-            etItemName.setText("");
-            loadData();
+            if (availableItems.size() == 1) {
+                // Only one shop has this item available, add it directly
+                Item existingItem = availableItems.get(0);
+                ShoppingListItem shoppingItem = ShoppingListItem.fromItem(existingItem);
+                databaseHelper.addToShoppingList(shoppingItem);
+                Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
+                etItemName.setText("");
+                loadData();
+            } else {
+                // Multiple shops have this item available, show shop selection dialog
+                showShopSelectionDialogForExistingItem(itemName, availableItems);
+            }
         } else {
-            // New item - show shop selection dialog
+            // New item - show shop selection dialog for all shops
             showShopSelectionDialog(itemName);
         }
     }
@@ -160,7 +181,12 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewShops);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        builder.setView(dialogView);
+        builder.setNegativeButton(R.string.cancel, null);
+        
+        AlertDialog dialog = builder.create();
         ShopSelectionAdapter adapter = new ShopSelectionAdapter(this, shops, shop -> {
+            dialog.dismiss();
             // Add as ad-hoc item to shopping list
             ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
             databaseHelper.addToShoppingList(shoppingItem);
@@ -169,19 +195,51 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             loadData();
         });
         recyclerView.setAdapter(adapter);
+        
+        dialog.show();
+    }
+
+    private void showShopSelectionDialogForExistingItem(String itemName, List<Item> matchingItems) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.select_shop);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_shop_selection, null);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewShops);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Get only the shops that have this item
+        List<Shop> shopsWithItem = new ArrayList<>();
+        for (Item item : matchingItems) {
+            for (Shop shop : shops) {
+                if (shop.getId() == item.getShopId()) {
+                    shopsWithItem.add(shop);
+                    break;
+                }
+            }
+        }
 
         builder.setView(dialogView);
         builder.setNegativeButton(R.string.cancel, null);
         
         AlertDialog dialog = builder.create();
-        adapter = new ShopSelectionAdapter(this, shops, shop -> {
+        ShopSelectionAdapter adapter = new ShopSelectionAdapter(this, shopsWithItem, shop -> {
             dialog.dismiss();
-            // Add as ad-hoc item to shopping list
-            ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
-            databaseHelper.addToShoppingList(shoppingItem);
-            Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
-            etItemName.setText("");
-            loadData();
+            // Find the item for this shop and add it to shopping list
+            Item selectedItem = null;
+            for (Item item : matchingItems) {
+                if (item.getShopId() == shop.getId()) {
+                    selectedItem = item;
+                    break;
+                }
+            }
+            
+            if (selectedItem != null) {
+                ShoppingListItem shoppingItem = ShoppingListItem.fromItem(selectedItem);
+                databaseHelper.addToShoppingList(shoppingItem);
+                Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
+                etItemName.setText("");
+                loadData();
+            }
         });
         recyclerView.setAdapter(adapter);
         
