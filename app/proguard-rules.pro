@@ -1,21 +1,36 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ProGuard rules for Shopt - Focus on performance optimization
+# This is an open source app, so no need for obfuscation
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep line numbers for debugging crash reports
+-keepattributes SourceFile,LineNumberTable
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep all application classes since this is open source
+# This allows R8 to still optimize and remove unused code/methods
+-keep class eu.domob.shopt2.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep standard Android framework classes that might be referenced dynamically
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+
+# Keep View constructors for XML inflation
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+# Keep RecyclerView classes
+-keep public class * extends androidx.recyclerview.widget.RecyclerView$ViewHolder
+-keep public class * extends androidx.recyclerview.widget.RecyclerView$Adapter
+
+# Keep Parcelable CREATOR fields
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# Performance: Allow aggressive optimization
+-allowaccessmodification
+-dontpreverify
