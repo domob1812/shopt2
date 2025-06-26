@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,17 +80,18 @@ public class ShopEditActivity extends AppCompatActivity implements ShopEditAdapt
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
 
-        EditText editText = new EditText(this);
-        editText.setHint(R.string.shop_name);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_shop, null);
+        com.google.android.material.textfield.TextInputEditText etShopName = dialogView.findViewById(R.id.etShopName);
+        
         if (existingShop != null) {
-            editText.setText(existingShop.getName());
+            etShopName.setText(existingShop.getName());
         }
-        builder.setView(editText);
+        builder.setView(dialogView);
 
         builder.setPositiveButton(existingShop == null ? R.string.add : R.string.save, (dialog, which) -> {
-            String shopName = editText.getText().toString().trim();
+            String shopName = etShopName.getText().toString().trim();
             if (TextUtils.isEmpty(shopName)) {
-                Toast.makeText(this, "Shop name cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.shop_name_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -97,16 +99,23 @@ public class ShopEditActivity extends AppCompatActivity implements ShopEditAdapt
                 // Add new shop
                 Shop newShop = new Shop(shopName, shops.size());
                 databaseHelper.addShop(newShop);
+                Toast.makeText(this, R.string.shop_added, Toast.LENGTH_SHORT).show();
             } else {
                 // Update existing shop
                 existingShop.setName(shopName);
                 databaseHelper.updateShop(existingShop);
+                Toast.makeText(this, R.string.shop_updated, Toast.LENGTH_SHORT).show();
             }
             loadData();
         });
 
         builder.setNegativeButton(R.string.cancel, null);
-        builder.show();
+        
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        
+        // Set focus on the input field and show keyboard
+        etShopName.requestFocus();
     }
 
     private void showDeleteShopDialog(Shop shop) {
@@ -119,7 +128,7 @@ public class ShopEditActivity extends AppCompatActivity implements ShopEditAdapt
         builder.setPositiveButton(R.string.delete, (dialog, which) -> {
             databaseHelper.deleteShop(shop.getId());
             loadData();
-            Toast.makeText(this, "Shop deleted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.shop_deleted, Toast.LENGTH_SHORT).show();
         });
         builder.setNegativeButton(R.string.cancel, null);
         builder.show();

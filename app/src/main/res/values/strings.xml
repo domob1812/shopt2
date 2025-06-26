@@ -32,4 +32,8 @@
     <string name="items_count">%d items</string>
     <string name="item_count_singular">%d item</string>
     <string name="item_count_plural">%d items</string>
+    <string name="shop_added">Shop added</string>
+    <string name="shop_updated">Shop updated</string>
+    <string name="shop_deleted">Shop deleted</string>
+    <string name="shop_name_empty">Shop name cannot be empty</string>
 </resources>
