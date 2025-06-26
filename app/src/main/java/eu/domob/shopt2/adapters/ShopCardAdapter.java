@@ -78,6 +78,8 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                 public void onItemChecked(ShoppingListItem item, boolean isChecked) {
                     item.setChecked(isChecked);
                     databaseHelper.updateShoppingListItem(item);
+                    // Post the adapter notification to avoid RecyclerView layout issues
+                    recyclerViewShoppingItems.post(() -> shoppingListAdapter.notifyDataSetChanged());
                 }
 
                 @Override
