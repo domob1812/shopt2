@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_edit_shops"
+        android:title="@string/edit_shops"
+        android:icon="@drawable/ic_store"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Edit shops" />
+
+    <item
+        android:id="@+id/action_clear_checked"
+        android:title="Clear checked"
+        android:icon="@drawable/ic_delete_sweep"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Clear checked items" />
+
+</menu>

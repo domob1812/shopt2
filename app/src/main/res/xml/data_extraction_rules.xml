@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Include database for cloud backup -->
+        <include domain="database" />
+    </cloud-backup>
+    <device-transfer>
+        <!-- Include database for device transfer -->
+        <include domain="database" />
+    </device-transfer>
+</data-extraction-rules>

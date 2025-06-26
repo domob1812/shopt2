@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shopt</string>
+    <string name="shopping_list">Shopping List</string>
+    <string name="edit_shops">Edit Shops</string>
+    <string name="edit_items">Edit %s Items</string>
+    <string name="add_item">Add Item</string>
+    <string name="add_shop">Add Shop</string>
+    <string name="edit_shop">Edit Shop</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="shop_name">Shop Name</string>
+    <string name="item_name">Item Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_shop">Delete Shop</string>
+    <string name="delete_shop_message">Are you sure you want to delete \"%s\"? This will also delete all %d items in this shop.</string>
+    <string name="select_shop">Select Shop</string>
+    <string name="enter_item_name">Enter item name</string>
+    <string name="edit_quantity">Edit Quantity</string>
+    <string name="quantity_hint">e.g., 2 kg, 3 bottles, 500g, etc.</string>
+    <string name="add_quantity">Add quantity</string>
+    <string name="no_shops_message">No shops added yet! Tap the shop icon to add one.</string>
+    <string name="no_items_in_shop">No items in this shop</string>
+    <string name="no_items_yet">No items in this shop yet</string>
+    <string name="on_shopping_list">On shopping list</string>
+    <string name="add_to_shopping_list">Add to shopping list</string>
+    <string name="added_to_shopping_list">%s added to shopping list</string>
+    <string name="please_add_shop_first">Please add a shop first</string>
+    <string name="items_count">%d items</string>
+    <string name="item_count_singular">%d item</string>
+    <string name="item_count_plural">%d items</string>
+</resources>
