@@ -4,7 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="6dp"
+    android:minHeight="40dp"
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground">
 
@@ -45,18 +49,18 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/blue_700"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="?attr/selectableItemBackground"
             android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/btnAddQuantity"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_add_box"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/add_quantity"
-            app:tint="@color/blue_primary"
+            android:tint="@color/blue_primary"
             android:visibility="visible" />
 
     </LinearLayout>

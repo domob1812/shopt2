@@ -4,18 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="4dp"
+    android:minHeight="42dp"
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/ivDragHandle"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="12dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="6dp"
         android:src="@drawable/ic_drag_handle"
         android:contentDescription="Drag handle"
-        app:tint="@color/gray" />
+        android:tint="@color/gray" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -44,32 +48,32 @@
 
     <ImageButton
         android:id="@+id/btnAddToShoppingList"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="1dp"
         android:src="@drawable/ic_add_shopping_cart"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/add_to_shopping_list"
-        app:tint="@color/gray"
+        android:tint="@color/gray"
         android:visibility="visible" />
 
     <ImageButton
         android:id="@+id/btnEditItem"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="1dp"
         android:src="@drawable/ic_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Edit item"
-        app:tint="@color/gray" />
+        android:tint="@color/gray" />
 
     <ImageButton
         android:id="@+id/btnDeleteItem"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:src="@drawable/ic_delete"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Delete item"
-        app:tint="@color/gray" />
+        android:tint="@color/gray" />
 
 </LinearLayout>

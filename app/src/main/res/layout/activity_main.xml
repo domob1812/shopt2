@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:padding="10dp"
         android:background="@color/white"
         android:elevation="2dp">
 
@@ -49,7 +49,8 @@
                 android:inputType="text"
                 android:imeOptions="actionDone"
                 android:completionThreshold="1"
-                android:dropDownHeight="200dp" />
+                android:dropDownHeight="wrap_content"
+                android:padding="8dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="4dp"
         android:clipToPadding="false" />
 
     <!-- Empty state -->

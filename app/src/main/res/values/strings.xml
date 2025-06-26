@@ -16,7 +16,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="delete_shop">Delete Shop</string>
-    <string name="delete_shop_message">Are you sure you want to delete \"%s\"? This will also delete all %d items in this shop.</string>
+    <string name="delete_shop_message" formatted="false">Are you sure you want to delete \"%s\"? This will also delete all %d items in this shop.</string>
     <string name="select_shop">Select Shop</string>
     <string name="enter_item_name">Enter item name</string>
     <string name="edit_quantity">Edit Quantity</string>

@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewShops"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="300dp" />
+        android:maxHeight="240dp" />
 
 </LinearLayout>
