@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -370,20 +368,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<ShoppingListItem> getShoppingListForShop(long shopId) {
         List<ShoppingListItem> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        
-        Cursor cursor = db.query(TABLE_SHOPPING_LIST, null, SL_SHOP_ID + "=?", 
-                                new String[]{String.valueOf(shopId)}, null, null, null);
-        
+
+        // Use a raw query with a LEFT JOIN to fetch and sort items efficiently in one go.
+        // This avoids the N+1 query problem from the previous Java-based sorting.
+        // Sorting logic:
+        // 1. Regular items (is_ad_hoc = 0) appear before ad-hoc items (is_ad_hoc = 1).
+        // 2. Regular items are sorted by their predefined order_index from the items table.
+        // 3. Ad-hoc items are sorted by their name.
+        String query = "SELECT sl." + SL_ID + ", sl." + SL_ITEM_ID + ", sl." + SL_NAME + ", sl." + SL_SHOP_ID +
+                ", sl." + SL_IS_CHECKED + ", sl." + SL_ORDER_INDEX + ", sl." + SL_IS_AD_HOC +
+                ", sl." + SL_QUANTITY +
+                " FROM " + TABLE_SHOPPING_LIST + " sl" +
+                " LEFT JOIN " + TABLE_ITEMS + " i ON sl." + SL_ITEM_ID + " = i." + ITEM_ID +
+                " WHERE sl." + SL_SHOP_ID + " = ?" +
+                " ORDER BY sl." + SL_IS_AD_HOC + " ASC, i." + ITEM_ORDER_INDEX + " ASC, sl." + SL_NAME + " ASC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(shopId)});
+
         if (cursor.moveToFirst()) {
             do {
                 ShoppingListItem item = new ShoppingListItem();
                 item.setId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_ID)));
-                
+
                 int itemIdIndex = cursor.getColumnIndexOrThrow(SL_ITEM_ID);
                 if (!cursor.isNull(itemIdIndex)) {
                     item.setItemId(cursor.getLong(itemIdIndex));
                 }
-                
+
                 item.setName(cursor.getString(cursor.getColumnIndexOrThrow(SL_NAME)));
                 item.setShopId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_SHOP_ID)));
                 item.setChecked(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_CHECKED)) == 1);
@@ -394,47 +405,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        
-        // Sort items: configured items first (by their configured order), then ad-hoc items
-        Collections.sort(items, new Comparator<ShoppingListItem>() {
-            @Override
-            public int compare(ShoppingListItem a, ShoppingListItem b) {
-                if (a.isAdHoc() && !b.isAdHoc()) return 1;
-                if (!a.isAdHoc() && b.isAdHoc()) return -1;
-                
-                if (!a.isAdHoc() && !b.isAdHoc()) {
-                    // Both are configured items, sort by their item's order
-                    Item itemA = getItemById(a.getItemId());
-                    Item itemB = getItemById(b.getItemId());
-                    if (itemA != null && itemB != null) {
-                        return Integer.compare(itemA.getOrderIndex(), itemB.getOrderIndex());
-                    }
-                }
-                
-                return Integer.compare(a.getOrderIndex(), b.getOrderIndex());
-            }
-        });
-        
-        return items;
-    }
 
-    private Item getItemById(Long itemId) {
-        if (itemId == null) return null;
-        
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_ITEMS, null, ITEM_ID + "=?", 
-                                new String[]{String.valueOf(itemId)}, null, null, null);
-        
-        Item item = null;
-        if (cursor.moveToFirst()) {
-            item = new Item();
-            item.setId(cursor.getLong(cursor.getColumnIndexOrThrow(ITEM_ID)));
-            item.setName(cursor.getString(cursor.getColumnIndexOrThrow(ITEM_NAME)));
-            item.setShopId(cursor.getLong(cursor.getColumnIndexOrThrow(ITEM_SHOP_ID)));
-            item.setOrderIndex(cursor.getInt(cursor.getColumnIndexOrThrow(ITEM_ORDER_INDEX)));
-        }
-        cursor.close();
-        return item;
+        return items;
     }
 
     public boolean updateShoppingListItem(ShoppingListItem item) {
