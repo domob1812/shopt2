@@ -25,6 +25,7 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
     private Context context;
     private DatabaseHelper databaseHelper;
     private OnShopCardListener listener;
+    private final RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
     private ShoppingListAdapter.OnShoppingListListener shoppingListListener;
 
     public ShopCardAdapter(Context context, List<Shop> shops, OnShopCardListener listener, ShoppingListAdapter.OnShoppingListListener shoppingListListener) {
@@ -71,25 +72,9 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             tvEmptyShop = itemView.findViewById(R.id.tvEmptyShop);
             btnEditItems = itemView.findViewById(R.id.btnEditItems);
             recyclerViewShoppingItems = itemView.findViewById(R.id.recyclerViewShoppingItems);
+            recyclerViewShoppingItems.setRecycledViewPool(viewPool);
 
             recyclerViewShoppingItems.setLayoutManager(new LinearLayoutManager(context));
-            shoppingListAdapter = new ShoppingListAdapter(context, null, new ShoppingListAdapter.OnShoppingListListener() {
-                @Override
-                public void onItemChecked(ShoppingListItem item, boolean isChecked) {
-                    item.setChecked(isChecked);
-                    databaseHelper.updateShoppingListItem(item);
-                    // Post the adapter notification to avoid RecyclerView layout issues
-                    recyclerViewShoppingItems.post(() -> shoppingListAdapter.notifyDataSetChanged());
-                }
-
-                @Override
-                public void onQuantityClicked(ShoppingListItem item) {
-                    if (shoppingListListener != null) {
-                        shoppingListListener.onQuantityClicked(item);
-                    }
-                }
-            });
-            recyclerViewShoppingItems.setAdapter(shoppingListAdapter);
         }
 
         public void bind(Shop shop) {
@@ -104,13 +89,32 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             // Load shopping list items for this shop
             List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId());
             
+
             if (shoppingItems.isEmpty()) {
                 tvEmptyShop.setVisibility(View.VISIBLE);
                 recyclerViewShoppingItems.setVisibility(View.GONE);
             } else {
                 tvEmptyShop.setVisibility(View.GONE);
                 recyclerViewShoppingItems.setVisibility(View.VISIBLE);
-                shoppingListAdapter.updateItems(shoppingItems);
+                
+                // Create a new adapter for each shop to avoid state confusion
+                final ShoppingListAdapter newAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
+                    @Override
+                    public void onItemChecked(ShoppingListItem item, boolean isChecked, int position) {
+                        item.setChecked(isChecked);
+                        databaseHelper.updateShoppingListItem(item);
+                        // Don't call notifyItemChanged - the checkbox state is already updated visually
+                    }
+
+                    @Override
+                    public void onQuantityClicked(ShoppingListItem item) {
+                        if (shoppingListListener != null) {
+                            shoppingListListener.onQuantityClicked(item);
+                        }
+                    }
+                });
+                recyclerViewShoppingItems.setAdapter(newAdapter);
+                shoppingListAdapter = newAdapter;
             }
         }
     }

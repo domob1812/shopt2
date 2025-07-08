@@ -17,7 +17,7 @@ import java.util.List;
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
 
     public interface OnShoppingListListener {
-        void onItemChecked(ShoppingListItem item, boolean isChecked);
+        void onItemChecked(ShoppingListItem item, boolean isChecked, int position);
         void onQuantityClicked(ShoppingListItem item);
     }
 
@@ -29,6 +29,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         this.context = context;
         this.items = items;
         this.listener = listener;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -49,6 +50,14 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     @Override
     public int getItemCount() {
         return items != null ? items.size() : 0;
+    }
+    
+    @Override
+    public long getItemId(int position) {
+        if (items != null && position >= 0 && position < items.size()) {
+            return items.get(position).getId();
+        }
+        return RecyclerView.NO_ID;
     }
 
     public void updateItems(List<ShoppingListItem> newItems) {
@@ -72,6 +81,16 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         public void bind(ShoppingListItem item) {
             tvItemName.setText(item.getName());
+            
+            // Apply strikethrough effect based on checked state
+            if (item.isChecked()) {
+                tvItemName.setPaintFlags(tvItemName.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                tvItemName.setPaintFlags(tvItemName.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+            
+            // Prevent from triggering listener due to view recycling
+            cbItemChecked.setOnCheckedChangeListener(null);
             cbItemChecked.setChecked(item.isChecked());
 
             // Apply strikethrough for checked items
@@ -95,9 +114,18 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             }
 
             // Set up click listeners
+            // Now set listener for user interactions
             cbItemChecked.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (listener != null) {
-                    listener.onItemChecked(item, isChecked);
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    // Update strikethrough immediately for visual feedback
+                    if (isChecked) {
+                        tvItemName.setPaintFlags(tvItemName.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+                    } else {
+                        tvItemName.setPaintFlags(tvItemName.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+                    }
+                    
+                    listener.onItemChecked(item, isChecked, position);
                 }
             });
 
@@ -115,11 +143,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
             // Make item name clickable to toggle checked state
             tvItemName.setOnClickListener(v -> {
-                boolean newCheckedState = !item.isChecked();
-                cbItemChecked.setChecked(newCheckedState);
-                if (listener != null) {
-                    listener.onItemChecked(item, newCheckedState);
-                }
+                cbItemChecked.toggle();
             });
         }
     }

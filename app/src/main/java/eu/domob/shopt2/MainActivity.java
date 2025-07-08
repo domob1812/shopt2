@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         shops = new ArrayList<>();
         shopCardAdapter = new ShopCardAdapter(this, shops, this, new ShoppingListAdapter.OnShoppingListListener() {
             @Override
-            public void onItemChecked(ShoppingListItem item, boolean isChecked) {
+            public void onItemChecked(ShoppingListItem item, boolean isChecked, int position) {
                 // Already handled in adapter
             }
 
