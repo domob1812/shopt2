@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -168,18 +169,21 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 showShopSelectionDialogForExistingItem(itemName, availableItems);
             }
         } else {
-            // New item - show shop selection dialog for all shops
-            showShopSelectionDialog(itemName);
+            // New item - show shop selection dialog for all shops with "add to shop" option
+            showShopSelectionDialogForNewItem(itemName);
         }
     }
 
-    private void showShopSelectionDialog(String itemName) {
+    private void showShopSelectionDialogForNewItem(String itemName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.select_shop);
 
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_shop_selection, null);
         RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewShops);
+        CheckBox checkboxAddToShop = dialogView.findViewById(R.id.checkboxAddToShop);
+        
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        checkboxAddToShop.setVisibility(View.VISIBLE);
 
         builder.setView(dialogView);
         builder.setNegativeButton(R.string.cancel, null);
@@ -187,9 +191,26 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         AlertDialog dialog = builder.create();
         ShopSelectionAdapter adapter = new ShopSelectionAdapter(this, shops, shop -> {
             dialog.dismiss();
-            // Add as ad-hoc item to shopping list
-            ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
-            databaseHelper.addToShoppingList(shoppingItem);
+            
+            boolean addToShop = checkboxAddToShop.isChecked();
+            
+            if (addToShop) {
+                // Add item to the shop first
+                Item newItem = new Item();
+                newItem.setName(itemName);
+                newItem.setShopId(shop.getId());
+                newItem.setOrderIndex(databaseHelper.getItemCountForShop(shop.getId()));
+                long itemId = databaseHelper.addItem(newItem);
+                
+                // Add to shopping list as regular item
+                ShoppingListItem shoppingItem = ShoppingListItem.fromItem(newItem);
+                databaseHelper.addToShoppingList(shoppingItem);
+            } else {
+                // Add as ad-hoc item to shopping list only
+                ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
+                databaseHelper.addToShoppingList(shoppingItem);
+            }
+            
             Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
             etItemName.setText("");
             loadData();

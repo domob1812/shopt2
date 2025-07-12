@@ -11,4 +11,12 @@
         android:layout_height="wrap_content"
         android:maxHeight="240dp" />
 
+    <CheckBox
+        android:id="@+id/checkboxAddToShop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/add_to_shop"
+        android:visibility="gone" />
+
 </LinearLayout>
