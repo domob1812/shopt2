@@ -1,0 +1,5 @@
+Small fixes and UX improvements.
+
+* Fixed flaky issues with selecting / unselecting items
+* Added support for "ad-hoc" items
+* Quickly add an item to the shopping list and shop at once
