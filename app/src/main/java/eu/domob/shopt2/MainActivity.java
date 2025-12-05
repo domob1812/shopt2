@@ -323,8 +323,14 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         if (id == R.id.action_edit_shops) {
             startActivity(new Intent(this, ShopEditActivity.class));
             return true;
+        } else if (id == R.id.action_uncheck_all) {
+            uncheckAllItems();
+            return true;
         } else if (id == R.id.action_clear_checked) {
             clearCheckedItems();
+            return true;
+        } else if (id == R.id.action_preferences) {
+            startActivity(new Intent(this, PreferencesActivity.class));
             return true;
         } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
@@ -332,6 +338,12 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void uncheckAllItems() {
+        databaseHelper.uncheckAllItems();
+        loadData();
+        Toast.makeText(this, "All items unchecked", Toast.LENGTH_SHORT).show();
     }
 
     private void clearCheckedItems() {

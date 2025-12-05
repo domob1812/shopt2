@@ -34,6 +34,11 @@
             android:theme="@style/Theme.Shopt" />
             
         <activity
+            android:name=".PreferencesActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.Shopt" />
+            
+        <activity
             android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Shopt" />

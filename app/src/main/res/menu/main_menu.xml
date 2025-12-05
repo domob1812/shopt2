@@ -6,15 +6,27 @@
         android:id="@+id/action_edit_shops"
         android:title="@string/edit_shops"
         android:icon="@drawable/ic_store"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:contentDescription="Edit shops" />
+
+    <item
+        android:id="@+id/action_uncheck_all"
+        android:title="Uncheck all"
+        android:icon="@drawable/ic_undo"
+        app:showAsAction="always"
+        android:contentDescription="Uncheck all items" />
 
     <item
         android:id="@+id/action_clear_checked"
         android:title="Clear checked"
         android:icon="@drawable/ic_delete_sweep"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:contentDescription="Clear checked items" />
+
+    <item
+        android:id="@+id/action_preferences"
+        android:title="@string/preferences"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_about"

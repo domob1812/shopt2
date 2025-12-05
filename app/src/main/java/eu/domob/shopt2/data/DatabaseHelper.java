@@ -378,23 +378,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public List<ShoppingListItem> getShoppingListForShop(long shopId) {
+    public List<ShoppingListItem> getShoppingListForShop(long shopId, boolean dropTickedToBottom) {
         List<ShoppingListItem> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Use a raw query with a LEFT JOIN to fetch and sort items efficiently in one go.
-        // This avoids the N+1 query problem from the previous Java-based sorting.
         // Sorting logic:
-        // 1. Regular items (is_ad_hoc = 0) appear before ad-hoc items (is_ad_hoc = 1).
-        // 2. Regular items are sorted by their predefined order_index from the items table.
-        // 3. Ad-hoc items are sorted by their name.
+        // 1. If dropTickedToBottom is true: Sort by checked state (unchecked first)
+        // 2. Regular items (is_ad_hoc = 0) appear before ad-hoc items (is_ad_hoc = 1).
+        // 3. Regular items are sorted by their predefined order_index from the items table.
+        // 4. Ad-hoc items are sorted by their name.
+        String orderByClause;
+        if (dropTickedToBottom) {
+            orderByClause = " ORDER BY sl." + SL_IS_CHECKED + " ASC, sl." + SL_IS_AD_HOC + " ASC, i." + ITEM_ORDER_INDEX + " ASC, sl." + SL_NAME + " ASC";
+        } else {
+            orderByClause = " ORDER BY sl." + SL_IS_AD_HOC + " ASC, i." + ITEM_ORDER_INDEX + " ASC, sl." + SL_NAME + " ASC";
+        }
+
         String query = "SELECT sl." + SL_ID + ", sl." + SL_ITEM_ID + ", sl." + SL_NAME + ", sl." + SL_SHOP_ID +
                 ", sl." + SL_IS_CHECKED + ", sl." + SL_ORDER_INDEX + ", sl." + SL_IS_AD_HOC +
                 ", sl." + SL_QUANTITY +
                 " FROM " + TABLE_SHOPPING_LIST + " sl" +
                 " LEFT JOIN " + TABLE_ITEMS + " i ON sl." + SL_ITEM_ID + " = i." + ITEM_ID +
                 " WHERE sl." + SL_SHOP_ID + " = ?" +
-                " ORDER BY sl." + SL_IS_AD_HOC + " ASC, i." + ITEM_ORDER_INDEX + " ASC, sl." + SL_NAME + " ASC";
+                orderByClause;
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(shopId)});
 
@@ -469,6 +476,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         
         cursor.close();
         return false;
+    }
+
+    public void uncheckAllItems() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SL_IS_CHECKED, 0);
+        db.update(TABLE_SHOPPING_LIST, values, SL_IS_CHECKED + "=?", new String[]{"1"});
+    }
+
+    public void uncheckItemsForShop(long shopId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SL_IS_CHECKED, 0);
+        db.update(TABLE_SHOPPING_LIST, values, SL_SHOP_ID + "=? AND " + SL_IS_CHECKED + "=?", 
+                 new String[]{String.valueOf(shopId), "1"});
     }
 
     public void removeCheckedItems() {
