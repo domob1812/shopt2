@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_edit_shops"
-        android:title="@string/edit_shops"
-        android:icon="@drawable/ic_store"
-        app:showAsAction="never"
-        android:contentDescription="Edit shops" />
-
-    <item
         android:id="@+id/action_uncheck_all"
         android:title="Uncheck all"
         android:icon="@drawable/ic_undo"
@@ -22,6 +15,13 @@
         android:icon="@drawable/ic_delete_sweep"
         app:showAsAction="always"
         android:contentDescription="Clear checked items" />
+
+    <item
+        android:id="@+id/action_edit_shops"
+        android:title="@string/edit_shops"
+        android:icon="@drawable/ic_store"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Edit shops" />
 
     <item
         android:id="@+id/action_export"
