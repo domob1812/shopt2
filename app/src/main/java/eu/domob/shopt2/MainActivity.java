@@ -329,6 +329,9 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         } else if (id == R.id.action_clear_checked) {
             clearCheckedItems();
             return true;
+        } else if (id == R.id.action_preferences) {
+            startActivity(new Intent(this, PreferencesActivity.class));
+            return true;
         } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;

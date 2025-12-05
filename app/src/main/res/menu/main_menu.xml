@@ -24,6 +24,11 @@
         android:contentDescription="Clear checked items" />
 
     <item
+        android:id="@+id/action_preferences"
+        android:title="@string/preferences"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_about"
         android:title="@string/about"
         app:showAsAction="never" />
