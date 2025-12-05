@@ -1,0 +1,12 @@
+Improvements to UX flow.
+
+* Remember the state of the "add to shop" checkbox when adding an item
+* Made shop blocks collapsible in the shopping list view
+* Bulk actions (delete or add to shopping list) on the screen
+  for editing items in a shop
+* Preference to drop ticked items to the bottom of the list, and bulk
+  unchecking of items on the shopping list.  This provides an alternate
+  workflow to deleting and re-adding the items, if desired.
+* Scroll each newly added item into view
+* Import and export functionality for data in JSON format
+* About screen displaying version number
