@@ -37,4 +37,7 @@
     <string name="shop_deleted">Shop deleted</string>
     <string name="shop_name_empty">Shop name cannot be empty</string>
     <string name="add_to_shop">Add to shop</string>
+    <string name="about">About</string>
+    <string name="license_info">This app is free software released under the GPL.</string>
+    <string name="github_link">https://github.com/domob1812/shopt2</string>
 </resources>

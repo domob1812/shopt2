@@ -32,6 +32,11 @@
             android:name=".ItemsEditActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Shopt" />
+            
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.Shopt" />
     </application>
 
 </manifest>
