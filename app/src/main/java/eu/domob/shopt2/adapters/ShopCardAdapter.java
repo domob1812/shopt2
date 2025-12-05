@@ -1,6 +1,7 @@
 package eu.domob.shopt2.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,7 +108,9 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             });
 
             // Load shopping list items for this shop
-            List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId());
+            SharedPreferences prefs = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+            boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
+            List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
             
             // Update collapse state
             updateCollapseState(shop.isCollapsed());
@@ -115,28 +118,39 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             if (shoppingItems.isEmpty()) {
                 tvEmptyShop.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 recyclerViewShoppingItems.setVisibility(View.GONE);
+                shoppingListAdapter = null;
             } else {
                 tvEmptyShop.setVisibility(View.GONE);
                 recyclerViewShoppingItems.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 
-                // Create a new adapter for each shop to avoid state confusion
-                final ShoppingListAdapter newAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
-                    @Override
-                    public void onItemChecked(ShoppingListItem item, boolean isChecked, int position) {
-                        item.setChecked(isChecked);
-                        databaseHelper.updateShoppingListItem(item);
-                        // Don't call notifyItemChanged - the checkbox state is already updated visually
-                    }
-
-                    @Override
-                    public void onQuantityClicked(ShoppingListItem item) {
-                        if (shoppingListListener != null) {
-                            shoppingListListener.onQuantityClicked(item);
+                // Reuse or create adapter
+                if (shoppingListAdapter == null) {
+                    shoppingListAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
+                        @Override
+                        public void onItemChecked(ShoppingListItem item, boolean isChecked, int position) {
+                            item.setChecked(isChecked);
+                            databaseHelper.updateShoppingListItem(item);
+                            
+                            // Read preference fresh to handle changes
+                            SharedPreferences prefs = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+                            boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
+                            // Always reload the list to re-sort, whether preference is on or off
+                            // This ensures the correct order is always displayed
+                            List<ShoppingListItem> updatedItems = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
+                            shoppingListAdapter.updateItems(updatedItems);
                         }
-                    }
-                });
-                recyclerViewShoppingItems.setAdapter(newAdapter);
-                shoppingListAdapter = newAdapter;
+
+                        @Override
+                        public void onQuantityClicked(ShoppingListItem item) {
+                            if (shoppingListListener != null) {
+                                shoppingListListener.onQuantityClicked(item);
+                            }
+                        }
+                    });
+                    recyclerViewShoppingItems.setAdapter(shoppingListAdapter);
+                } else {
+                    shoppingListAdapter.updateItems(shoppingItems);
+                }
             }
         }
 
