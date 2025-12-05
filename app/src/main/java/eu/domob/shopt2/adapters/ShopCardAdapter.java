@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -60,6 +62,8 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
     }
 
     class ShopCardViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout shopHeader;
+        private ImageView ivCollapseIndicator;
         private TextView tvShopName;
         private TextView tvEmptyShop;
         private ImageButton btnEditItems;
@@ -68,6 +72,8 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
 
         public ShopCardViewHolder(@NonNull View itemView) {
             super(itemView);
+            shopHeader = itemView.findViewById(R.id.shopHeader);
+            ivCollapseIndicator = itemView.findViewById(R.id.ivCollapseIndicator);
             tvShopName = itemView.findViewById(R.id.tvShopName);
             tvEmptyShop = itemView.findViewById(R.id.tvEmptyShop);
             btnEditItems = itemView.findViewById(R.id.btnEditItems);
@@ -86,16 +92,25 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                 }
             });
 
+            // Set up collapse/expand functionality
+            shopHeader.setOnClickListener(v -> {
+                shop.setCollapsed(!shop.isCollapsed());
+                databaseHelper.updateShopCollapsedState(shop.getId(), shop.isCollapsed());
+                updateCollapseState(shop.isCollapsed());
+            });
+
             // Load shopping list items for this shop
             List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId());
             
+            // Update collapse state
+            updateCollapseState(shop.isCollapsed());
 
             if (shoppingItems.isEmpty()) {
-                tvEmptyShop.setVisibility(View.VISIBLE);
+                tvEmptyShop.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 recyclerViewShoppingItems.setVisibility(View.GONE);
             } else {
                 tvEmptyShop.setVisibility(View.GONE);
-                recyclerViewShoppingItems.setVisibility(View.VISIBLE);
+                recyclerViewShoppingItems.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 
                 // Create a new adapter for each shop to avoid state confusion
                 final ShoppingListAdapter newAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
@@ -115,6 +130,21 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                 });
                 recyclerViewShoppingItems.setAdapter(newAdapter);
                 shoppingListAdapter = newAdapter;
+            }
+        }
+
+        private void updateCollapseState(boolean isCollapsed) {
+            ivCollapseIndicator.setRotation(isCollapsed ? -90 : 0);
+            
+            // Check if there are items in the RecyclerView
+            boolean hasItems = shoppingListAdapter != null && shoppingListAdapter.getItemCount() > 0;
+            
+            if (hasItems) {
+                tvEmptyShop.setVisibility(View.GONE);
+                recyclerViewShoppingItems.setVisibility(isCollapsed ? View.GONE : View.VISIBLE);
+            } else {
+                tvEmptyShop.setVisibility(isCollapsed ? View.GONE : View.VISIBLE);
+                recyclerViewShoppingItems.setVisibility(View.GONE);
             }
         }
     }

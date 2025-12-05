@@ -4,6 +4,7 @@ public class Shop {
     private long id;
     private String name;
     private int orderIndex;
+    private boolean isCollapsed;
 
     public Shop() {}
 
@@ -41,6 +42,14 @@ public class Shop {
 
     public void setOrderIndex(int orderIndex) {
         this.orderIndex = orderIndex;
+    }
+
+    public boolean isCollapsed() {
+        return isCollapsed;
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        isCollapsed = collapsed;
     }
 
     @Override

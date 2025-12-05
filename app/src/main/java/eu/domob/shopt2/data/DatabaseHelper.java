@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "shopt.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table names
     private static final String TABLE_SHOPS = "shops";
@@ -21,6 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SHOP_ID = "id";
     private static final String SHOP_NAME = "name";
     private static final String SHOP_ORDER_INDEX = "order_index";
+    private static final String SHOP_IS_COLLAPSED = "is_collapsed";
 
     // Item table columns
     private static final String ITEM_ID = "id";
@@ -42,7 +43,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_SHOPS_TABLE = "CREATE TABLE " + TABLE_SHOPS + " ("
             + SHOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SHOP_NAME + " TEXT NOT NULL, "
-            + SHOP_ORDER_INDEX + " INTEGER DEFAULT 0"
+            + SHOP_ORDER_INDEX + " INTEGER DEFAULT 0, "
+            + SHOP_IS_COLLAPSED + " INTEGER DEFAULT 0"
             + ")";
 
     private static final String CREATE_ITEMS_TABLE = "CREATE TABLE " + TABLE_ITEMS + " ("
@@ -91,10 +93,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING_LIST);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_SHOPS + " ADD COLUMN " + SHOP_IS_COLLAPSED + " INTEGER DEFAULT 0");
+        }
     }
 
     @Override
@@ -216,6 +217,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 shop.setId(cursor.getLong(cursor.getColumnIndexOrThrow(SHOP_ID)));
                 shop.setName(cursor.getString(cursor.getColumnIndexOrThrow(SHOP_NAME)));
                 shop.setOrderIndex(cursor.getInt(cursor.getColumnIndexOrThrow(SHOP_ORDER_INDEX)));
+                shop.setCollapsed(cursor.getInt(cursor.getColumnIndexOrThrow(SHOP_IS_COLLAPSED)) == 1);
                 shops.add(shop);
             } while (cursor.moveToNext());
         }
@@ -228,6 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(SHOP_NAME, shop.getName());
         values.put(SHOP_ORDER_INDEX, shop.getOrderIndex());
+        values.put(SHOP_IS_COLLAPSED, shop.isCollapsed() ? 1 : 0);
         
         int result = db.update(TABLE_SHOPS, values, SHOP_ID + "=?", 
                               new String[]{String.valueOf(shop.getId())});
@@ -255,6 +258,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+    }
+
+    public boolean updateShopCollapsedState(long shopId, boolean isCollapsed) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SHOP_IS_COLLAPSED, isCollapsed ? 1 : 0);
+        
+        int result = db.update(TABLE_SHOPS, values, SHOP_ID + "=?", 
+                              new String[]{String.valueOf(shopId)});
+        return result > 0;
     }
 
     // Item CRUD operations
