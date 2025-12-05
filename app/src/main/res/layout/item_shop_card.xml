@@ -49,6 +49,16 @@
                 android:textColor="@color/black" />
 
             <ImageButton
+                android:id="@+id/btnUncheckShop"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_undo"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Uncheck all items in shop"
+                android:layout_margin="2dp"
+                android:tint="@color/gray" />
+
+            <ImageButton
                 android:id="@+id/btnEditItems"
                 android:layout_width="36dp"
                 android:layout_height="36dp"

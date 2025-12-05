@@ -66,6 +66,7 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
         private ImageView ivCollapseIndicator;
         private TextView tvShopName;
         private TextView tvEmptyShop;
+        private ImageButton btnUncheckShop;
         private ImageButton btnEditItems;
         private RecyclerView recyclerViewShoppingItems;
         private ShoppingListAdapter shoppingListAdapter;
@@ -76,6 +77,7 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             ivCollapseIndicator = itemView.findViewById(R.id.ivCollapseIndicator);
             tvShopName = itemView.findViewById(R.id.tvShopName);
             tvEmptyShop = itemView.findViewById(R.id.tvEmptyShop);
+            btnUncheckShop = itemView.findViewById(R.id.btnUncheckShop);
             btnEditItems = itemView.findViewById(R.id.btnEditItems);
             recyclerViewShoppingItems = itemView.findViewById(R.id.recyclerViewShoppingItems);
             recyclerViewShoppingItems.setRecycledViewPool(viewPool);
@@ -85,6 +87,11 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
 
         public void bind(Shop shop) {
             tvShopName.setText(shop.getName());
+            
+            btnUncheckShop.setOnClickListener(v -> {
+                databaseHelper.uncheckItemsForShop(shop.getId());
+                notifyDataSetChanged();
+            });
             
             btnEditItems.setOnClickListener(v -> {
                 if (listener != null) {

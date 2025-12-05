@@ -471,6 +471,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
+    public void uncheckAllItems() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SL_IS_CHECKED, 0);
+        db.update(TABLE_SHOPPING_LIST, values, SL_IS_CHECKED + "=?", new String[]{"1"});
+    }
+
+    public void uncheckItemsForShop(long shopId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SL_IS_CHECKED, 0);
+        db.update(TABLE_SHOPPING_LIST, values, SL_SHOP_ID + "=? AND " + SL_IS_CHECKED + "=?", 
+                 new String[]{String.valueOf(shopId), "1"});
+    }
+
     public void removeCheckedItems() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SHOPPING_LIST, SL_IS_CHECKED + "=?", new String[]{"1"});
