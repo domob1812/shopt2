@@ -1,7 +1,9 @@
 package eu.domob.shopt2;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -184,6 +186,14 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         checkboxAddToShop.setVisibility(View.VISIBLE);
+        
+        SharedPreferences prefs = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        boolean lastState = prefs.getBoolean("add_to_shop_checkbox", false);
+        checkboxAddToShop.setChecked(lastState);
+        
+        checkboxAddToShop.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("add_to_shop_checkbox", isChecked).apply();
+        });
 
         builder.setView(dialogView);
         builder.setNegativeButton(R.string.cancel, null);
