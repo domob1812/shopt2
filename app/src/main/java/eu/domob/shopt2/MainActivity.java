@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -11,10 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
     private ShopCardAdapter shopCardAdapter;
     private DatabaseHelper databaseHelper;
     private List<Shop> shops;
+    private ExportHelper exportHelper;
+    private ActivityResultLauncher<Intent> saveFileLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         setupToolbar();
         setupRecyclerView();
         setupAddItemInput();
+        setupExport();
         loadData();
     }
 
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         etItemName = findViewById(R.id.etItemName);
         fabAddItem = findViewById(R.id.fabAddItem);
         databaseHelper = DatabaseHelper.getInstance(this);
+        exportHelper = new ExportHelper(this);
     }
 
     private void setupToolbar() {
@@ -332,12 +340,80 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         } else if (id == R.id.action_preferences) {
             startActivity(new Intent(this, PreferencesActivity.class));
             return true;
+        } else if (id == R.id.action_export) {
+            showExportDialog();
+            return true;
         } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setupExport() {
+        saveFileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri != null) {
+                            try {
+                                exportHelper.writeToUri(uri);
+                                Toast.makeText(this, R.string.export_successful, Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void showExportDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_export_method, null);
+
+        Button btnSaveToFile = dialogView.findViewById(R.id.btnSaveToFile);
+        Button btnShare = dialogView.findViewById(R.id.btnShare);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        btnSaveToFile.setOnClickListener(v -> {
+            dialog.dismiss();
+            exportToFile();
+        });
+
+        btnShare.setOnClickListener(v -> {
+            dialog.dismiss();
+            shareExport();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void exportToFile() {
+        try {
+            Intent intent = exportHelper.createSaveIntent();
+            saveFileLauncher.launch(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void shareExport() {
+        try {
+            Intent shareIntent = exportHelper.createShareIntent();
+            startActivity(shareIntent);
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     private void uncheckAllItems() {

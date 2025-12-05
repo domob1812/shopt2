@@ -42,4 +42,10 @@
     <string name="drop_ticked_to_bottom">Drop ticked items to the bottom</string>
     <string name="license_info">This app is free software released under the GPL.</string>
     <string name="github_link">https://github.com/domob1812/shopt2</string>
+    <string name="export_data">Export data</string>
+    <string name="export_method">Export method</string>
+    <string name="save_to_file">Save to file</string>
+    <string name="share">Share</string>
+    <string name="export_successful">Data exported successfully</string>
+    <string name="export_failed">Export failed</string>
 </resources>
