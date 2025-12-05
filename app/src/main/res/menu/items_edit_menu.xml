@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_to_shopping_list"
+        android:title="@string/add_to_shopping_list"
+        android:icon="@drawable/ic_add_shopping_cart"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Add to shopping list" />
+
+    <item
+        android:id="@+id/action_delete_checked"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_delete_sweep"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Delete checked items" />
+
+</menu>

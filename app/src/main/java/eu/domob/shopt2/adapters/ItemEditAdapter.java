@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,13 +14,14 @@ import eu.domob.shopt2.R;
 import eu.domob.shopt2.data.DatabaseHelper;
 import eu.domob.shopt2.data.Item;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEditViewHolder> {
 
     public interface OnItemEditListener {
         void onEditItem(Item item);
-        void onDeleteItem(Item item);
         void onItemMoved(int fromPosition, int toPosition);
     }
 
@@ -27,6 +29,7 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
     private Context context;
     private DatabaseHelper databaseHelper;
     private OnItemEditListener listener;
+    private Set<Long> checkedItems = new HashSet<>();
 
     public ItemEditAdapter(Context context, List<Item> items, OnItemEditListener listener) {
         this.context = context;
@@ -58,6 +61,15 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
         notifyDataSetChanged();
     }
 
+    public Set<Long> getCheckedItems() {
+        return new HashSet<>(checkedItems);
+    }
+
+    public void clearCheckedItems() {
+        checkedItems.clear();
+        notifyDataSetChanged();
+    }
+
     public void moveItem(int fromPosition, int toPosition) {
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
@@ -76,19 +88,17 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
     }
 
     class ItemEditViewHolder extends RecyclerView.ViewHolder {
+        private CheckBox cbItemSelect;
         private TextView tvItemName;
         private TextView tvOnShoppingList;
-        private ImageView ivDragHandle;
         private ImageButton btnEditItem;
-        private ImageButton btnDeleteItem;
 
         public ItemEditViewHolder(@NonNull View itemView) {
             super(itemView);
+            cbItemSelect = itemView.findViewById(R.id.cbItemSelect);
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvOnShoppingList = itemView.findViewById(R.id.tvOnShoppingList);
-            ivDragHandle = itemView.findViewById(R.id.ivDragHandle);
             btnEditItem = itemView.findViewById(R.id.btnEditItem);
-            btnDeleteItem = itemView.findViewById(R.id.btnDeleteItem);
         }
 
         public void bind(Item item) {
@@ -102,15 +112,25 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.ItemEd
                 tvOnShoppingList.setVisibility(View.GONE);
             }
 
-            btnEditItem.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onEditItem(item);
+            // Set checkbox state
+            cbItemSelect.setOnCheckedChangeListener(null);
+            cbItemSelect.setChecked(checkedItems.contains(item.getId()));
+            cbItemSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    checkedItems.add(item.getId());
+                } else {
+                    checkedItems.remove(item.getId());
                 }
             });
 
-            btnDeleteItem.setOnClickListener(v -> {
+            // Toggle checkbox on item name click
+            itemView.setOnClickListener(v -> {
+                cbItemSelect.toggle();
+            });
+
+            btnEditItem.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onDeleteItem(item);
+                    listener.onEditItem(item);
                 }
             });
         }
