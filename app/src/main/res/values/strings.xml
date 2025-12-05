@@ -48,4 +48,10 @@
     <string name="share">Share</string>
     <string name="export_successful">Data exported successfully</string>
     <string name="export_failed">Export failed</string>
+    <string name="import_data">Import data</string>
+    <string name="import_confirm_title">Replace all data?</string>
+    <string name="import_confirm_message">Replace all existing data with imported data? This cannot be undone.</string>
+    <string name="replace">Replace</string>
+    <string name="import_successful">Data imported successfully</string>
+    <string name="import_failed">This doesn\'t appear to be a valid Shopt backup file</string>
 </resources>

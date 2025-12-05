@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
     private DatabaseHelper databaseHelper;
     private List<Shop> shops;
     private ExportHelper exportHelper;
+    private ImportHelper importHelper;
     private ActivityResultLauncher<Intent> saveFileLauncher;
+    private ActivityResultLauncher<Intent> openFileLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,9 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         setupRecyclerView();
         setupAddItemInput();
         setupExport();
+        setupImport();
         loadData();
+        handleIncomingIntent();
     }
 
     @Override
@@ -73,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         fabAddItem = findViewById(R.id.fabAddItem);
         databaseHelper = DatabaseHelper.getInstance(this);
         exportHelper = new ExportHelper(this);
+        importHelper = new ImportHelper(this);
     }
 
     private void setupToolbar() {
@@ -343,6 +348,9 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         } else if (id == R.id.action_export) {
             showExportDialog();
             return true;
+        } else if (id == R.id.action_import) {
+            importData();
+            return true;
         } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
@@ -365,6 +373,19 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                                 Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                });
+    }
+
+    private void setupImport() {
+        openFileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri != null) {
+                            handleImportUri(uri);
                         }
                     }
                 });
@@ -413,6 +434,59 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         } catch (Exception e) {
             Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
+        }
+    }
+
+    private void importData() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+        openFileLauncher.launch(intent);
+    }
+
+    private void handleImportUri(Uri uri) {
+        try {
+            importHelper.validateBackup(uri);
+            showImportConfirmation(uri);
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.import_failed, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void showImportConfirmation(Uri uri) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.import_confirm_title)
+                .setMessage(R.string.import_confirm_message)
+                .setPositiveButton(R.string.replace, (dialog, which) -> {
+                    try {
+                        importHelper.importFromUri(uri);
+                        loadData();
+                        Toast.makeText(this, R.string.import_successful, Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(this, R.string.import_failed, Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void handleIncomingIntent() {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        
+        if (Intent.ACTION_VIEW.equals(action) || Intent.ACTION_SEND.equals(action)) {
+            Uri uri = null;
+            if (Intent.ACTION_VIEW.equals(action)) {
+                uri = intent.getData();
+            } else if (Intent.ACTION_SEND.equals(action)) {
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            }
+            
+            if (uri != null) {
+                handleImportUri(uri);
+            }
         }
     }
 

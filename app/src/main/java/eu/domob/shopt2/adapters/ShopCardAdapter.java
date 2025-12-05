@@ -123,9 +123,8 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                 tvEmptyShop.setVisibility(View.GONE);
                 recyclerViewShoppingItems.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 
-                // Reuse or create adapter
-                if (shoppingListAdapter == null) {
-                    shoppingListAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
+                // Always create new adapter to avoid stale references
+                shoppingListAdapter = new ShoppingListAdapter(context, shoppingItems, new ShoppingListAdapter.OnShoppingListListener() {
                         @Override
                         public void onItemChecked(ShoppingListItem item, boolean isChecked, int position) {
                             item.setChecked(isChecked);
@@ -136,7 +135,8 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                             boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
                             // Always reload the list to re-sort, whether preference is on or off
                             // This ensures the correct order is always displayed
-                            List<ShoppingListItem> updatedItems = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
+                            // Use the shopId from the item itself, not from captured shop variable
+                            List<ShoppingListItem> updatedItems = databaseHelper.getShoppingListForShop(item.getShopId(), dropTickedToBottom);
                             shoppingListAdapter.updateItems(updatedItems);
                         }
 
@@ -147,10 +147,7 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                             }
                         }
                     });
-                    recyclerViewShoppingItems.setAdapter(shoppingListAdapter);
-                } else {
-                    shoppingListAdapter.updateItems(shoppingItems);
-                }
+                recyclerViewShoppingItems.setAdapter(shoppingListAdapter);
             }
         }
 

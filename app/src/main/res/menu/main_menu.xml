@@ -29,6 +29,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_import"
+        android:title="@string/import_data"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_preferences"
         android:title="@string/preferences"
         app:showAsAction="never" />
