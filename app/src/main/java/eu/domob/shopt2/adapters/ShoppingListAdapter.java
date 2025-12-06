@@ -65,6 +65,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         notifyDataSetChanged();
     }
 
+    public List<ShoppingListItem> getItems() {
+        return items;
+    }
+
     class ShoppingListViewHolder extends RecyclerView.ViewHolder {
         private CheckBox cbItemChecked;
         private TextView tvItemName;

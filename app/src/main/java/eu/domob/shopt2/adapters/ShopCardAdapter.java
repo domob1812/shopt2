@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,12 +25,19 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
         void onEditItemsClicked(Shop shop);
     }
 
+    public interface OnScrollRequestListener {
+        void onScrollToViewTop(View view);
+    }
+
     private List<Shop> shops;
     private Context context;
     private DatabaseHelper databaseHelper;
     private OnShopCardListener listener;
     private final RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
     private ShoppingListAdapter.OnShoppingListListener shoppingListListener;
+    private OnScrollRequestListener scrollRequestListener;
+    private Long pendingScrollShopId;
+    private String pendingScrollItemName;
 
     public ShopCardAdapter(Context context, List<Shop> shops, OnShopCardListener listener, ShoppingListAdapter.OnShoppingListListener shoppingListListener) {
         this.context = context;
@@ -60,6 +68,15 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
     public void updateShops(List<Shop> newShops) {
         this.shops = newShops;
         notifyDataSetChanged();
+    }
+
+    public void setPendingScroll(long shopId, String itemName) {
+        this.pendingScrollShopId = shopId;
+        this.pendingScrollItemName = itemName;
+    }
+
+    public void setScrollRequestListener(OnScrollRequestListener listener) {
+        this.scrollRequestListener = listener;
     }
 
     class ShopCardViewHolder extends RecyclerView.ViewHolder {
@@ -148,6 +165,24 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                         }
                     });
                 recyclerViewShoppingItems.setAdapter(shoppingListAdapter);
+                
+                // Handle pending scroll request for this shop
+                if (pendingScrollShopId != null && pendingScrollShopId == shop.getId()) {
+                    final String itemName = pendingScrollItemName;
+                    final int itemPosition = findItemPosition(itemName);
+                    pendingScrollShopId = null;
+                    pendingScrollItemName = null;
+                    if (itemPosition != -1) {
+                        recyclerViewShoppingItems.getViewTreeObserver().addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    recyclerViewShoppingItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    scrollToItemPosition(itemPosition);
+                                }
+                            });
+                    }
+                }
             }
         }
 
@@ -163,6 +198,27 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             } else {
                 tvEmptyShop.setVisibility(isCollapsed ? View.GONE : View.VISIBLE);
                 recyclerViewShoppingItems.setVisibility(View.GONE);
+            }
+        }
+
+        private int findItemPosition(String itemName) {
+            if (shoppingListAdapter == null) return -1;
+            
+            List<ShoppingListItem> items = shoppingListAdapter.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getName().equalsIgnoreCase(itemName)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private void scrollToItemPosition(int position) {
+            if (scrollRequestListener == null) return;
+            
+            View itemView = recyclerViewShoppingItems.getLayoutManager().findViewByPosition(position);
+            if (itemView != null) {
+                scrollRequestListener.onScrollToViewTop(itemView);
             }
         }
     }

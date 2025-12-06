@@ -98,6 +98,15 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 showQuantityDialog(item);
             }
         });
+        shopCardAdapter.setScrollRequestListener(view -> {
+            // Calculate the view's position relative to the RecyclerView and scroll it to the top
+            int[] location = new int[2];
+            view.getLocationInWindow(location);
+            int[] rvLocation = new int[2];
+            recyclerViewShops.getLocationInWindow(rvLocation);
+            int scrollOffset = location[1] - rvLocation[1];
+            recyclerViewShops.smoothScrollBy(0, scrollOffset);
+        });
         recyclerViewShops.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewShops.setAdapter(shopCardAdapter);
     }
@@ -168,6 +177,10 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 // All matching items are already on the shopping list
                 Toast.makeText(this, itemName + " is already on the shopping list", Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
+                // Scroll to the first matching item
+                if (!matchingItems.isEmpty()) {
+                    scrollToShopAndItem(matchingItems.get(0).getShopId(), itemName);
+                }
                 return;
             }
             
@@ -179,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
                 loadData();
+                scrollToShopAndItem(existingItem.getShopId(), itemName);
             } else {
                 // Multiple shops have this item available, show shop selection dialog
                 showShopSelectionDialogForExistingItem(itemName, availableItems);
@@ -237,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
             etItemName.setText("");
             loadData();
+            scrollToShopAndItem(shop.getId(), itemName);
         });
         recyclerView.setAdapter(adapter);
         
@@ -283,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
                 loadData();
+                scrollToShopAndItem(selectedItem.getShopId(), itemName);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -500,6 +516,33 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
         databaseHelper.removeCheckedItems();
         loadData();
         Toast.makeText(this, "Checked items cleared", Toast.LENGTH_SHORT).show();
+    }
+
+    private void scrollToShopAndItem(long shopId, String itemName) {
+        // Find the position of the shop in the list
+        int position = -1;
+        Shop targetShop = null;
+        for (int i = 0; i < shops.size(); i++) {
+            if (shops.get(i).getId() == shopId) {
+                position = i;
+                targetShop = shops.get(i);
+                break;
+            }
+        }
+        
+        if (position != -1 && targetShop != null) {
+            // Expand the shop if it's collapsed
+            if (targetShop.isCollapsed()) {
+                targetShop.setCollapsed(false);
+                databaseHelper.updateShopCollapsedState(targetShop.getId(), false);
+            }
+            
+            // Set pending scroll - will be executed when the ViewHolder binds
+            shopCardAdapter.setPendingScroll(shopId, itemName);
+            shopCardAdapter.notifyItemChanged(position);
+            // Scroll shop to top of view, then the callback will adjust for the specific item
+            ((LinearLayoutManager) recyclerViewShops.getLayoutManager()).scrollToPositionWithOffset(position, 0);
+        }
     }
 
     @Override
