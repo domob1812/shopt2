@@ -509,6 +509,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    public ShoppingListItem getShoppingListItemByItemId(long itemId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_SHOPPING_LIST, null, 
+                                SL_ITEM_ID + "=?", new String[]{String.valueOf(itemId)}, 
+                                null, null, null);
+        
+        ShoppingListItem item = null;
+        if (cursor.moveToFirst()) {
+            item = new ShoppingListItem();
+            item.setId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_ID)));
+
+            int itemIdIndex = cursor.getColumnIndexOrThrow(SL_ITEM_ID);
+            if (!cursor.isNull(itemIdIndex)) {
+                item.setItemId(cursor.getLong(itemIdIndex));
+            }
+
+            item.setName(cursor.getString(cursor.getColumnIndexOrThrow(SL_NAME)));
+            item.setShopId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_SHOP_ID)));
+            item.setChecked(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_CHECKED)) == 1);
+            item.setOrderIndex(cursor.getInt(cursor.getColumnIndexOrThrow(SL_ORDER_INDEX)));
+            item.setAdHoc(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_AD_HOC)) == 1);
+            item.setQuantity(cursor.getString(cursor.getColumnIndexOrThrow(SL_QUANTITY)));
+        }
+        cursor.close();
+        return item;
+    }
+
     public int getItemCountForShop(long shopId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_ITEMS, new String[]{"COUNT(*)"}, 

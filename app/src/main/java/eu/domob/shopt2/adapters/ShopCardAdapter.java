@@ -62,6 +62,77 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
         notifyDataSetChanged();
     }
 
+    /**
+     * Scrolls the given item into view. If the shop containing the item is collapsed,
+     * it will be expanded first. The item will be scrolled to the top of the view
+     * (unless it's near the bottom of the list).
+     */
+    public void scrollToItem(RecyclerView outerRecyclerView, long shoppingListItemId) {
+        // Find which shop contains the item
+        int shopIndex = -1;
+        long shopId = -1;
+        int itemPositionInShop = -1;
+
+        SharedPreferences prefs = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
+
+        for (int i = 0; i < shops.size(); i++) {
+            Shop shop = shops.get(i);
+            List<ShoppingListItem> items = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
+            for (int j = 0; j < items.size(); j++) {
+                if (items.get(j).getId() == shoppingListItemId) {
+                    shopIndex = i;
+                    shopId = shop.getId();
+                    itemPositionInShop = j;
+                    break;
+                }
+            }
+            if (shopIndex >= 0) break;
+        }
+
+        if (shopIndex < 0) return;
+
+        // Expand shop if collapsed
+        Shop shop = shops.get(shopIndex);
+        if (shop.isCollapsed()) {
+            shop.setCollapsed(false);
+            databaseHelper.updateShopCollapsedState(shop.getId(), false);
+            notifyItemChanged(shopIndex);
+        }
+
+        // Scroll shop to top first
+        LinearLayoutManager layoutManager = (LinearLayoutManager) outerRecyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            layoutManager.scrollToPositionWithOffset(shopIndex, 0);
+        }
+
+        // Post to wait for layout, then scroll item into view
+        final int finalShopIndex = shopIndex;
+        final int finalItemPosition = itemPositionInShop;
+        outerRecyclerView.post(() -> {
+            RecyclerView.ViewHolder vh = outerRecyclerView.findViewHolderForAdapterPosition(finalShopIndex);
+            if (!(vh instanceof ShopCardViewHolder)) return;
+
+            ShopCardViewHolder shopVH = (ShopCardViewHolder) vh;
+            RecyclerView innerRecyclerView = shopVH.recyclerViewShoppingItems;
+
+            RecyclerView.ViewHolder itemVH = innerRecyclerView.findViewHolderForAdapterPosition(finalItemPosition);
+            if (itemVH == null) return;
+
+            View itemView = itemVH.itemView;
+
+            // Get item's position on screen
+            int[] itemLocation = new int[2];
+            itemView.getLocationOnScreen(itemLocation);
+
+            int[] rvLocation = new int[2];
+            outerRecyclerView.getLocationOnScreen(rvLocation);
+
+            int offset = itemLocation[1] - rvLocation[1];
+            outerRecyclerView.scrollBy(0, offset);
+        });
+    }
+
     class ShopCardViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout shopHeader;
         private ImageView ivCollapseIndicator;

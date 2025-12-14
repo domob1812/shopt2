@@ -166,8 +166,20 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             
             if (availableItems.isEmpty()) {
                 // All matching items are already on the shopping list
+                // Find the shopping list item ID for the first matching item
+                long shoppingListItemId = -1;
+                for (Item item : matchingItems) {
+                    ShoppingListItem slItem = databaseHelper.getShoppingListItemByItemId(item.getId());
+                    if (slItem != null) {
+                        shoppingListItemId = slItem.getId();
+                        break;
+                    }
+                }
                 Toast.makeText(this, itemName + " is already on the shopping list", Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
+                if (shoppingListItemId >= 0) {
+                    shopCardAdapter.scrollToItem(recyclerViewShops, shoppingListItemId);
+                }
                 return;
             }
             
@@ -175,10 +187,10 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
                 // Only one shop has this item available, add it directly
                 Item existingItem = availableItems.get(0);
                 ShoppingListItem shoppingItem = ShoppingListItem.fromItem(existingItem);
-                databaseHelper.addToShoppingList(shoppingItem);
+                long newId = databaseHelper.addToShoppingList(shoppingItem);
                 Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
-                loadData();
+                loadDataAndScrollTo(newId);
             } else {
                 // Multiple shops have this item available, show shop selection dialog
                 showShopSelectionDialogForExistingItem(itemName, availableItems);
@@ -217,26 +229,27 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             
             boolean addToShop = checkboxAddToShop.isChecked();
             
+            long newId;
             if (addToShop) {
                 // Add item to the shop first
                 Item newItem = new Item();
                 newItem.setName(itemName);
                 newItem.setShopId(shop.getId());
                 newItem.setOrderIndex(databaseHelper.getItemCountForShop(shop.getId()));
-                long itemId = databaseHelper.addItem(newItem);
+                databaseHelper.addItem(newItem);
                 
                 // Add to shopping list as regular item
                 ShoppingListItem shoppingItem = ShoppingListItem.fromItem(newItem);
-                databaseHelper.addToShoppingList(shoppingItem);
+                newId = databaseHelper.addToShoppingList(shoppingItem);
             } else {
                 // Add as ad-hoc item to shopping list only
                 ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
-                databaseHelper.addToShoppingList(shoppingItem);
+                newId = databaseHelper.addToShoppingList(shoppingItem);
             }
             
             Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
             etItemName.setText("");
-            loadData();
+            loadDataAndScrollTo(newId);
         });
         recyclerView.setAdapter(adapter);
         
@@ -279,10 +292,10 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             
             if (selectedItem != null) {
                 ShoppingListItem shoppingItem = ShoppingListItem.fromItem(selectedItem);
-                databaseHelper.addToShoppingList(shoppingItem);
+                long newId = databaseHelper.addToShoppingList(shoppingItem);
                 Toast.makeText(this, getString(R.string.added_to_shopping_list, itemName), Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
-                loadData();
+                loadDataAndScrollTo(newId);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -321,6 +334,11 @@ public class MainActivity extends AppCompatActivity implements ShopCardAdapter.O
             tvEmptyState.setVisibility(View.GONE);
             recyclerViewShops.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void loadDataAndScrollTo(long shoppingListItemId) {
+        loadData();
+        recyclerViewShops.post(() -> shopCardAdapter.scrollToItem(recyclerViewShops, shoppingListItemId));
     }
 
     @Override
