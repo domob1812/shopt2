@@ -26,6 +26,33 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/themePreference"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/theme"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvThemeValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/theme_system"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/dropTickedPreference"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

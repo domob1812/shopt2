@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,7 +19,7 @@ import eu.domob.shopt2.utils.ItemTouchHelperCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShopEditActivity extends AppCompatActivity implements ShopEditAdapter.OnShopEditListener, ItemTouchHelperCallback.ItemTouchHelperAdapter {
+public class ShopEditActivity extends BaseActivity implements ShopEditAdapter.OnShopEditListener, ItemTouchHelperCallback.ItemTouchHelperAdapter {
 
     private RecyclerView recyclerViewShops;
     private FloatingActionButton fabAddShop;
