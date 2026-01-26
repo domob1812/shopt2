@@ -209,7 +209,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Shop> shops = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         
-        Cursor cursor = db.query(TABLE_SHOPS, null, null, null, null, null, SHOP_ORDER_INDEX + " ASC");
+        // Query with LEFT JOIN to count shopping list items per shop
+        // Sort by: 1) non-empty shops first (item_count DESC), 2) order_index ASC
+        String query = "SELECT s." + SHOP_ID + ", s." + SHOP_NAME + ", s." + SHOP_ORDER_INDEX + ", s." + SHOP_IS_COLLAPSED +
+                ", COUNT(sl." + SL_ID + ") as item_count" +
+                " FROM " + TABLE_SHOPS + " s" +
+                " LEFT JOIN " + TABLE_SHOPPING_LIST + " sl ON s." + SHOP_ID + " = sl." + SL_SHOP_ID +
+                " GROUP BY s." + SHOP_ID +
+                " ORDER BY CASE WHEN COUNT(sl." + SL_ID + ") > 0 THEN 0 ELSE 1 END, s." + SHOP_ORDER_INDEX + " ASC";
+        
+        Cursor cursor = db.rawQuery(query, null);
         
         if (cursor.moveToFirst()) {
             do {

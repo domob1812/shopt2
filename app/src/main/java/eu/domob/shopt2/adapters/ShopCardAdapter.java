@@ -2,6 +2,7 @@ package eu.domob.shopt2.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +159,24 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
         }
 
         public void bind(Shop shop) {
-            tvShopName.setText(shop.getName());
+            // Get shopping items count for this shop
+            SharedPreferences prefs = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+            boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
+            List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
+            int itemCount = shoppingItems.size();
+            
+            // Set shop name with item count
+            String shopNameWithCount = shop.getName() + " (" + itemCount + ")";
+            tvShopName.setText(shopNameWithCount);
+            
+            // Style based on whether shop is empty
+            if (itemCount == 0) {
+                tvShopName.setTypeface(null, Typeface.ITALIC);
+                tvShopName.setTextColor(context.getResources().getColor(R.color.gray));
+            } else {
+                tvShopName.setTypeface(null, Typeface.BOLD);
+                tvShopName.setTextColor(context.getResources().getColor(R.color.black));
+            }
             
             btnUncheckShop.setOnClickListener(v -> {
                 databaseHelper.uncheckItemsForShop(shop.getId());
@@ -177,16 +195,11 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
                 databaseHelper.updateShopCollapsedState(shop.getId(), shop.isCollapsed());
                 updateCollapseState(shop.isCollapsed());
             });
-
-            // Load shopping list items for this shop
-            SharedPreferences prefs = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
-            boolean dropTickedToBottom = prefs.getBoolean("drop_ticked_to_bottom", false);
-            List<ShoppingListItem> shoppingItems = databaseHelper.getShoppingListForShop(shop.getId(), dropTickedToBottom);
             
             // Update collapse state
             updateCollapseState(shop.isCollapsed());
 
-            if (shoppingItems.isEmpty()) {
+            if (itemCount == 0) {
                 tvEmptyShop.setVisibility(shop.isCollapsed() ? View.GONE : View.VISIBLE);
                 recyclerViewShoppingItems.setVisibility(View.GONE);
                 shoppingListAdapter = null;

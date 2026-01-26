@@ -1,0 +1,4 @@
+UI/UX improvements:
+
+* Display number of items for each shop
+* Style empty shops non-bold and order to the bottom of the list
