@@ -16,8 +16,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.Shopt.PopupOverlay"
-            app:title="@string/about"
-            app:titleTextColor="@color/white" />
+            app:title="@string/about" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -43,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="18sp"
-            android:textColor="@color/gray" />
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
         <TextView
             android:id="@+id/tvLicense"
@@ -53,7 +52,7 @@
             android:text="@string/license_info"
             android:textSize="16sp"
             android:gravity="center"
-            android:textColor="@android:color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvGitHub"

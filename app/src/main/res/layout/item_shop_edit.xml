@@ -18,7 +18,7 @@
         android:layout_marginEnd="6dp"
         android:src="@drawable/ic_drag_handle"
         android:contentDescription="Drag handle"
-        android:tint="@color/gray" />
+        android:tint="?attr/colorOnSurfaceVariant" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="Shop Name"
             android:textSize="16sp"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvItemCount"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:text="0 items"
             android:textSize="12sp"
-            android:textColor="@color/gray" />
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
 
@@ -52,7 +52,7 @@
         android:src="@drawable/ic_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Edit shop"
-        android:tint="@color/gray" />
+        android:tint="?attr/colorOnSurfaceVariant" />
 
     <ImageButton
         android:id="@+id/btnDeleteShop"
@@ -61,6 +61,6 @@
         android:src="@drawable/ic_delete"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Delete shop"
-        android:tint="@color/gray" />
+        android:tint="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

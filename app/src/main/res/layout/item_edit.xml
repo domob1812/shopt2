@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="Item Name"
             android:textSize="16sp"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvOnShoppingList"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:text="@string/on_shopping_list"
             android:textSize="12sp"
-            android:textColor="@color/green"
+            android:textColor="@color/success"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -51,6 +51,6 @@
         android:src="@drawable/ic_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Edit item"
-        android:tint="@color/gray" />
+        android:tint="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

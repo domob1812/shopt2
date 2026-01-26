@@ -16,8 +16,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.Shopt.PopupOverlay"
-            app:title="@string/preferences"
-            app:titleTextColor="@color/white" />
+            app:title="@string/preferences" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
