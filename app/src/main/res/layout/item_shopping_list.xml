@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Item Name"
             android:textSize="16sp"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
     </LinearLayout>
 
@@ -48,7 +48,7 @@
             android:text=""
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="@color/blue_700"
+            android:textColor="?attr/colorPrimary"
             android:padding="4dp"
             android:background="?attr/selectableItemBackground"
             android:visibility="gone" />
@@ -60,7 +60,7 @@
             android:src="@drawable/ic_add_box"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/add_quantity"
-            android:tint="@color/blue_primary"
+            android:tint="?attr/colorPrimary"
             android:visibility="visible" />
 
     </LinearLayout>

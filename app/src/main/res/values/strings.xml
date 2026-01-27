@@ -54,4 +54,8 @@
     <string name="replace">Replace</string>
     <string name="import_successful">Data imported successfully</string>
     <string name="import_failed">This doesn\'t appear to be a valid Shopt backup file</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
 </resources>

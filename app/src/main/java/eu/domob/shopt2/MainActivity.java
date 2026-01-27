@@ -34,7 +34,7 @@ import eu.domob.shopt2.data.ShoppingListItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ShopCardAdapter.OnShopCardListener {
+public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShopCardListener {
 
     private RecyclerView recyclerViewShops;
     private TextView tvEmptyState;

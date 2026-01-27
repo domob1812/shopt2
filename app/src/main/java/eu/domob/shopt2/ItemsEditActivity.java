@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ItemsEditActivity extends AppCompatActivity implements ItemEditAdapter.OnItemEditListener, ItemTouchHelperCallback.ItemTouchHelperAdapter {
+public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.OnItemEditListener, ItemTouchHelperCallback.ItemTouchHelperAdapter {
 
     private RecyclerView recyclerViewItems;
     private TextView tvEmptyState;

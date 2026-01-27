@@ -15,8 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Shopt.PopupOverlay"
-            app:titleTextColor="@color/white" />
+            app:popupTheme="@style/Theme.Shopt.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -39,7 +38,7 @@
         android:padding="16dp"
         android:visibility="gone"
         android:textSize="16sp"
-        android:textColor="@color/gray" />
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddItem"
@@ -48,7 +47,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
-        app:tint="@color/white"
-        app:backgroundTint="@color/blue_primary" />
+        app:backgroundTint="?attr/colorPrimary"
+        app:tint="?attr/colorOnPrimary" />
 
 </LinearLayout>

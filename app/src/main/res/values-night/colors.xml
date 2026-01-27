@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme colors for dark mode -->
+    <color name="blue_primary">#1565C0</color>
+    <color name="blue_primary_dark">#0D47A1</color>
+    <color name="blue_accent">#80CBC4</color>
+    <color name="blue_light">#121212</color>
+    <color name="blue_700">#1565C0</color>
+    
+    <!-- Surface colors -->
+    <color name="surface">#1E1E1E</color>
+    <color name="surface_variant">#2C2C2C</color>
+    
+    <!-- Content colors -->
+    <color name="on_surface">#E0E0E0</color>
+    <color name="on_surface_variant">#A0A0A0</color>
+    <color name="on_primary">#E3F2FD</color>
+    
+    <!-- Semantic colors -->
+    <color name="success">#66BB6A</color>
+    
+    <!-- Legacy colors (for backward compatibility if needed) -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#A0A0A0</color>
+    <color name="gray_light">#2C2C2C</color>
+    <color name="green">#66BB6A</color>
+</resources>

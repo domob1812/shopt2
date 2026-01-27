@@ -3,6 +3,7 @@ package eu.domob.shopt2.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,12 +171,15 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             tvShopName.setText(shopNameWithCount);
             
             // Style based on whether shop is empty
+            TypedValue typedValue = new TypedValue();
             if (itemCount == 0) {
                 tvShopName.setTypeface(null, Typeface.ITALIC);
-                tvShopName.setTextColor(context.getResources().getColor(R.color.gray));
+                context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, typedValue, true);
+                tvShopName.setTextColor(typedValue.data);
             } else {
                 tvShopName.setTypeface(null, Typeface.BOLD);
-                tvShopName.setTextColor(context.getResources().getColor(R.color.black));
+                context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+                tvShopName.setTextColor(typedValue.data);
             }
             
             btnUncheckShop.setOnClickListener(v -> {
