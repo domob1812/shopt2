@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'eu.domob.shopt2'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "eu.domob.shopt2"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode 4
         versionName "2.2.0"
     }
@@ -27,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 }
 
