@@ -1,0 +1,17 @@
+Shopt est une application de liste de courses simple et efficace qui vous aide
+à organiser vos achats en regroupant les articles par magasin et en les classant
+dans l'ordre dans lequel vous les croiserez.
+
+Fonctionnalités :
+• Regroupez vos articles par magasin pour des courses plus efficaces
+• Cochez les articles au fur et à mesure de vos achats
+• Supprimez les articles terminés en un seul geste
+• Gérez et modifiez votre liste de magasins
+• Modifiez et réordonnez les articles dans chaque magasin
+• Ordre personnalisé correspondant à votre itinéraire en magasin
+• Interface claire et intuitive
+• Fonctionne entièrement hors ligne — aucune connexion requise
+• Sans publicité, sans suivi, sans permissions inutiles
+
+Idéale pour ceux qui veulent une liste de courses simple, sans complexité ni
+compromis sur la vie privée.
