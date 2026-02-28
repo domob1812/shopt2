@@ -1,0 +1,17 @@
+Shopt ist eine einfache und effiziente Einkaufslisten-App, mit der du deine
+Einkäufe organisieren kannst – gegliedert nach Läden und sortiert in der
+Reihenfolge, in der du die Artikel im Laden antreffen wirst.
+
+Funktionen:
+• Einkaufsartikel nach Läden gruppieren für effiziente Einkäufe
+• Artikel beim Einkaufen abhaken
+• Erledigte Artikel mit einem Tippen entfernen
+• Läden verwalten und bearbeiten
+• Artikel innerhalb eines Ladens bearbeiten und neu anordnen
+• Individuelle Artikelreihenfolge passend zu deiner Einkaufsroute
+• Übersichtliche, intuitive Benutzeroberfläche
+• Funktioniert vollständig offline – keine Internetverbindung erforderlich
+• Keine Werbung, kein Tracking, keine unnötigen Berechtigungen
+
+Ideal für alle, die eine unkomplizierte Einkaufslisten-App ohne überflüssige
+Funktionen oder Datenschutzbedenken suchen.
