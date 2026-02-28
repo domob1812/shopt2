@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -30,7 +31,7 @@
             android:id="@+id/tvShopName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shop Name"
+            tools:text="Shop Name"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface" />
 
@@ -38,7 +39,7 @@
             android:id="@+id/tvItemCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0 items"
+            tools:text="0 items"
             android:textSize="12sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
