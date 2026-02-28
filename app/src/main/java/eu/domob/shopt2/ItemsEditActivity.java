@@ -152,10 +152,7 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         itemEditAdapter.clearCheckedItems();
         loadData();
 
-        String message = addedCount == 1 ?
-                getString(R.string.items_added_to_shopping_list_singular) :
-                getString(R.string.items_added_to_shopping_list_plural, addedCount);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getResources().getQuantityString(R.plurals.items_added_to_shopping_list, addedCount, addedCount), Toast.LENGTH_SHORT).show();
     }
 
     private void deleteCheckedItems() {
@@ -166,23 +163,17 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         }
 
         int count = checkedItemIds.size();
-        String message = count == 1 ?
-                getString(R.string.delete_items_confirm_singular) :
-                getString(R.string.delete_items_confirm_plural, count);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.delete_items);
-        builder.setMessage(message);
+        builder.setMessage(getResources().getQuantityString(R.plurals.delete_items_confirm, count, count));
         builder.setPositiveButton(R.string.delete, (dialog, which) -> {
             for (long itemId : checkedItemIds) {
                 databaseHelper.deleteItem(itemId);
             }
             itemEditAdapter.clearCheckedItems();
             loadData();
-            String deleted = count == 1 ?
-                    getString(R.string.items_deleted_singular) :
-                    getString(R.string.items_deleted_plural, count);
-            Toast.makeText(this, deleted, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getQuantityString(R.plurals.items_deleted, count, count), Toast.LENGTH_SHORT).show();
         });
         builder.setNegativeButton(R.string.cancel, null);
         builder.show();
