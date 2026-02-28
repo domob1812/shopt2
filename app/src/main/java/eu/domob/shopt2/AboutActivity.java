@@ -33,7 +33,7 @@ public class AboutActivity extends BaseActivity {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             tvVersion.setText(versionName);
         } catch (Exception e) {
-            tvVersion.setText("Unknown");
+            tvVersion.setText(R.string.version_unknown);
         }
     }
 

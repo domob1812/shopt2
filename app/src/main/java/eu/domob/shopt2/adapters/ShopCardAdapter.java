@@ -167,8 +167,7 @@ public class ShopCardAdapter extends RecyclerView.Adapter<ShopCardAdapter.ShopCa
             int itemCount = shoppingItems.size();
             
             // Set shop name with item count
-            String shopNameWithCount = shop.getName() + " (" + itemCount + ")";
-            tvShopName.setText(shopNameWithCount);
+            tvShopName.setText(context.getString(R.string.shop_name_with_count, shop.getName(), itemCount));
             
             // Style based on whether shop is empty
             TypedValue typedValue = new TypedValue();

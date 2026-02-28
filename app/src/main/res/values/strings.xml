@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Shopt</string>
+    <string name="app_name" translatable="false">Shopt</string>
     <string name="shopping_list">Shopping List</string>
     <string name="edit_shops">Edit Shops</string>
     <string name="edit_items">Edit %s Items</string>
@@ -16,7 +16,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="delete_shop">Delete Shop</string>
-    <string name="delete_shop_message" formatted="false">Are you sure you want to delete \"%s\"? This will also delete all %d items in this shop.</string>
+    <string name="delete_shop_message">Are you sure you want to delete \"%1$s\"? This will also delete all %2$d items in this shop.</string>
     <string name="select_shop">Select Shop</string>
     <string name="enter_item_name">Enter item name</string>
     <string name="edit_quantity">Edit Quantity</string>
@@ -35,13 +35,14 @@
     <string name="shop_added">Shop added</string>
     <string name="shop_updated">Shop updated</string>
     <string name="shop_deleted">Shop deleted</string>
+    <string name="shop_name_with_count">%1$s (%2$d)</string>
     <string name="shop_name_empty">Shop name cannot be empty</string>
     <string name="add_to_shop">Add to shop</string>
     <string name="about">About</string>
     <string name="preferences">Preferences</string>
     <string name="drop_ticked_to_bottom">Drop ticked items to the bottom</string>
     <string name="license_info">This app is free software released under the GPL.</string>
-    <string name="github_link">https://github.com/domob1812/shopt2</string>
+    <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Export data</string>
     <string name="export_method">Export method</string>
     <string name="save_to_file">Save to file</string>
@@ -58,4 +59,41 @@
     <string name="theme_system">Follow system</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="already_on_shopping_list">%s is already on the shopping list</string>
+    <string name="all_items_unchecked">All items unchecked</string>
+    <string name="checked_items_cleared">Checked items cleared</string>
+    <string name="item_name_empty">Item name cannot be empty</string>
+    <string name="no_items_selected">No items selected</string>
+    <string name="delete_items">Delete Items</string>
+    <string name="version_unknown">Unknown</string>
+    <string name="uncheck_all">Uncheck all</string>
+    <string name="clear_checked">Clear checked</string>
+    <string name="cd_uncheck_all_items">Uncheck all items</string>
+    <string name="cd_clear_checked_items">Clear checked items</string>
+    <string name="cd_edit_shops">Edit shops</string>
+    <string name="cd_add_to_shopping_list">Add to shopping list</string>
+    <string name="cd_delete_checked_items">Delete checked items</string>
+    <string name="cd_select_item">Select item</string>
+    <string name="cd_edit_item">Edit item</string>
+    <string name="cd_collapse_indicator">Collapse indicator</string>
+    <string name="cd_uncheck_all_items_in_shop">Uncheck all items in shop</string>
+    <string name="cd_edit_items">Edit items</string>
+    <string name="cd_drag_handle">Drag handle</string>
+    <string name="cd_edit_shop">Edit shop</string>
+    <string name="cd_delete_shop">Delete shop</string>
+    <string name="items_added_to_shopping_list_singular">1 item added to shopping list</string>
+    <string name="items_added_to_shopping_list_plural">%d items added to shopping list</string>
+    <string name="delete_items_confirm_singular">Delete 1 item?</string>
+    <string name="delete_items_confirm_plural">Delete %d items?</string>
+    <string name="items_deleted_singular">1 item deleted</string>
+    <string name="items_deleted_plural">%d items deleted</string>
+    <string name="demo_shop_grocery">Grocery Store</string>
+    <string name="demo_shop_hardware">Hardware Store</string>
+    <string name="demo_item_milk">Milk</string>
+    <string name="demo_item_bread">Bread</string>
+    <string name="demo_item_eggs">Eggs</string>
+    <string name="demo_item_apples">Apples</string>
+    <string name="demo_item_nails">Nails</string>
+    <string name="demo_item_hammer">Hammer</string>
+    <string name="demo_item_cookies">Cookies</string>
 </resources>
