@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -17,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
-        android:contentDescription="Select item" />
+        android:contentDescription="@string/cd_select_item" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -29,7 +30,7 @@
             android:id="@+id/tvItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Item Name"
+            tools:text="Item Name"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface" />
 
@@ -50,7 +51,7 @@
         android:layout_height="36dp"
         android:src="@drawable/ic_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Edit item"
+        android:contentDescription="@string/cd_edit_item"
         android:tint="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="1dp"
@@ -36,14 +37,14 @@
                 android:src="@drawable/ic_expand_more"
                 android:layout_marginEnd="4dp"
                 android:tint="?attr/colorOnSurfaceVariant"
-                android:contentDescription="Collapse indicator" />
+                android:contentDescription="@string/cd_collapse_indicator" />
 
             <TextView
                 android:id="@+id/tvShopName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Shop Name"
+                tools:text="Shop Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface" />
@@ -54,7 +55,7 @@
                 android:layout_height="36dp"
                 android:src="@drawable/ic_undo"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Uncheck all items in shop"
+                android:contentDescription="@string/cd_uncheck_all_items_in_shop"
                 android:layout_margin="2dp"
                 android:tint="?attr/colorOnSurfaceVariant" />
 
@@ -64,7 +65,7 @@
                 android:layout_height="36dp"
                 android:src="@drawable/ic_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Edit items"
+                android:contentDescription="@string/cd_edit_items"
                 android:layout_margin="2dp"
                 android:tint="?attr/colorOnSurfaceVariant" />
 

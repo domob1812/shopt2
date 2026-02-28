@@ -175,7 +175,7 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
                         break;
                     }
                 }
-                Toast.makeText(this, itemName + " is already on the shopping list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.already_on_shopping_list, itemName), Toast.LENGTH_SHORT).show();
                 etItemName.setText("");
                 if (shoppingListItemId >= 0) {
                     shopCardAdapter.scrollToItem(recyclerViewShops, shoppingListItemId);
@@ -511,13 +511,13 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
     private void uncheckAllItems() {
         databaseHelper.uncheckAllItems();
         loadData();
-        Toast.makeText(this, "All items unchecked", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.all_items_unchecked, Toast.LENGTH_SHORT).show();
     }
 
     private void clearCheckedItems() {
         databaseHelper.removeCheckedItems();
         loadData();
-        Toast.makeText(this, "Checked items cleared", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.checked_items_cleared, Toast.LENGTH_SHORT).show();
     }
 
     @Override

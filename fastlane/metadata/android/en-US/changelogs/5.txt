@@ -1,0 +1,1 @@
+* Added translations to languages other than English

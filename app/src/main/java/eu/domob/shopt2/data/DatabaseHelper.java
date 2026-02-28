@@ -2,6 +2,7 @@ package eu.domob.shopt2.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import eu.domob.shopt2.R;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -70,6 +71,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper instance;
 
+    private final Context context;
+
     public static synchronized DatabaseHelper getInstance(Context context) {
         if (instance == null) {
             instance = new DatabaseHelper(context.getApplicationContext());
@@ -79,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -105,20 +109,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void insertDemoData(SQLiteDatabase db) {
+        String grocery = context.getString(R.string.demo_shop_grocery);
+        String hardware = context.getString(R.string.demo_shop_hardware);
+        String milk = context.getString(R.string.demo_item_milk);
+        String bread = context.getString(R.string.demo_item_bread);
+        String eggs = context.getString(R.string.demo_item_eggs);
+        String apples = context.getString(R.string.demo_item_apples);
+        String nails = context.getString(R.string.demo_item_nails);
+        String hammer = context.getString(R.string.demo_item_hammer);
+        String cookies = context.getString(R.string.demo_item_cookies);
+
         // Demo shops
         ContentValues shopValues = new ContentValues();
-        shopValues.put(SHOP_NAME, "Grocery Store");
+        shopValues.put(SHOP_NAME, grocery);
         shopValues.put(SHOP_ORDER_INDEX, 0);
         long groceryId = db.insert(TABLE_SHOPS, null, shopValues);
 
         shopValues.clear();
-        shopValues.put(SHOP_NAME, "Hardware Store");
+        shopValues.put(SHOP_NAME, hardware);
         shopValues.put(SHOP_ORDER_INDEX, 1);
         long hardwareId = db.insert(TABLE_SHOPS, null, shopValues);
 
         // Demo items for grocery store
         ContentValues itemValues = new ContentValues();
-        String[] groceryItems = {"Milk", "Bread", "Eggs", "Apples"};
+        String[] groceryItems = {milk, bread, eggs, apples};
         for (int i = 0; i < groceryItems.length; i++) {
             itemValues.clear();
             itemValues.put(ITEM_NAME, groceryItems[i]);
@@ -128,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         // Demo items for hardware store
-        String[] hardwareItems = {"Nails", "Hammer"};
+        String[] hardwareItems = {nails, hammer};
         for (int i = 0; i < hardwareItems.length; i++) {
             itemValues.clear();
             itemValues.put(ITEM_NAME, hardwareItems[i]);
@@ -140,13 +154,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Add some items to shopping list
         ContentValues slValues = new ContentValues();
         // Get item IDs for the demo items
-        Cursor cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID}, 
-                                ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?", 
-                                new String[]{"Milk", String.valueOf(groceryId)}, null, null, null);
+        Cursor cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID},
+                                ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?",
+                                new String[]{milk, String.valueOf(groceryId)}, null, null, null);
         if (cursor.moveToFirst()) {
             long milkId = cursor.getLong(0);
             slValues.put(SL_ITEM_ID, milkId);
-            slValues.put(SL_NAME, "Milk");
+            slValues.put(SL_NAME, milk);
             slValues.put(SL_SHOP_ID, groceryId);
             slValues.put(SL_ORDER_INDEX, 0);
             slValues.put(SL_IS_AD_HOC, 0);
@@ -154,14 +168,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID}, 
-                         ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?", 
-                         new String[]{"Eggs", String.valueOf(groceryId)}, null, null, null);
+        cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID},
+                         ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?",
+                         new String[]{eggs, String.valueOf(groceryId)}, null, null, null);
         if (cursor.moveToFirst()) {
             long eggsId = cursor.getLong(0);
             slValues.clear();
             slValues.put(SL_ITEM_ID, eggsId);
-            slValues.put(SL_NAME, "Eggs");
+            slValues.put(SL_NAME, eggs);
             slValues.put(SL_SHOP_ID, groceryId);
             slValues.put(SL_ORDER_INDEX, 2);
             slValues.put(SL_IS_AD_HOC, 0);
@@ -169,14 +183,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID}, 
-                         ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?", 
-                         new String[]{"Nails", String.valueOf(hardwareId)}, null, null, null);
+        cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID},
+                         ITEM_NAME + "=? AND " + ITEM_SHOP_ID + "=?",
+                         new String[]{nails, String.valueOf(hardwareId)}, null, null, null);
         if (cursor.moveToFirst()) {
             long nailsId = cursor.getLong(0);
             slValues.clear();
             slValues.put(SL_ITEM_ID, nailsId);
-            slValues.put(SL_NAME, "Nails");
+            slValues.put(SL_NAME, nails);
             slValues.put(SL_SHOP_ID, hardwareId);
             slValues.put(SL_ORDER_INDEX, 0);
             slValues.put(SL_IS_AD_HOC, 0);
@@ -186,7 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Add an ad-hoc item
         slValues.clear();
-        slValues.put(SL_NAME, "Cookies");
+        slValues.put(SL_NAME, cookies);
         slValues.put(SL_SHOP_ID, groceryId);
         slValues.put(SL_ORDER_INDEX, 999);
         slValues.put(SL_IS_AD_HOC, 1);

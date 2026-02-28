@@ -95,10 +95,7 @@ public class ShopEditAdapter extends RecyclerView.Adapter<ShopEditAdapter.ShopEd
             tvShopName.setText(shop.getName());
             
             int itemCount = databaseHelper.getItemCountForShop(shop.getId());
-            String itemCountText = itemCount == 1 ? 
-                context.getString(R.string.item_count_singular, itemCount) :
-                context.getString(R.string.item_count_plural, itemCount);
-            tvItemCount.setText(itemCountText);
+            tvItemCount.setText(context.getResources().getQuantityString(R.plurals.item_count, itemCount, itemCount));
 
             btnEditShop.setOnClickListener(v -> {
                 if (listener != null) {

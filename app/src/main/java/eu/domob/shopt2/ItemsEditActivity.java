@@ -108,7 +108,7 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         builder.setPositiveButton(existingItem == null ? R.string.add : R.string.save, (dialog, which) -> {
             String itemName = editText.getText().toString().trim();
             if (TextUtils.isEmpty(itemName)) {
-                Toast.makeText(this, "Item name cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.item_name_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -131,7 +131,7 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
     private void addCheckedItemsToShoppingList() {
         Set<Long> checkedItemIds = itemEditAdapter.getCheckedItems();
         if (checkedItemIds.isEmpty()) {
-            Toast.makeText(this, "No items selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_items_selected, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -152,31 +152,28 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         itemEditAdapter.clearCheckedItems();
         loadData();
 
-        String message = addedCount == 1 ? addedCount + " item added to shopping list" : addedCount + " items added to shopping list";
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getResources().getQuantityString(R.plurals.items_added_to_shopping_list, addedCount, addedCount), Toast.LENGTH_SHORT).show();
     }
 
     private void deleteCheckedItems() {
         Set<Long> checkedItemIds = itemEditAdapter.getCheckedItems();
         if (checkedItemIds.isEmpty()) {
-            Toast.makeText(this, "No items selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_items_selected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         int count = checkedItemIds.size();
-        String message = count == 1 ? "Delete 1 item?" : "Delete " + count + " items?";
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete Items");
-        builder.setMessage(message);
+        builder.setTitle(R.string.delete_items);
+        builder.setMessage(getResources().getQuantityString(R.plurals.delete_items_confirm, count, count));
         builder.setPositiveButton(R.string.delete, (dialog, which) -> {
             for (long itemId : checkedItemIds) {
                 databaseHelper.deleteItem(itemId);
             }
             itemEditAdapter.clearCheckedItems();
             loadData();
-            String deleted = count == 1 ? "1 item deleted" : count + " items deleted";
-            Toast.makeText(this, deleted, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getQuantityString(R.plurals.items_deleted, count, count), Toast.LENGTH_SHORT).show();
         });
         builder.setNegativeButton(R.string.cancel, null);
         builder.show();

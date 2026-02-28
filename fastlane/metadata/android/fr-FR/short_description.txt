@@ -1,0 +1,1 @@
+Une liste de courses simple avec regroupement par magasin et tri des articles.
