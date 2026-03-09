@@ -1,1 +1,2 @@
 * Added translations to languages other than English
+* Fixed a UI bug with Android 15+
