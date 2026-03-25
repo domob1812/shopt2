@@ -40,7 +40,7 @@
     <string name="add_to_shop">Aan winkel toevoegen</string>
     <string name="about">Over</string>
     <string name="preferences">Voorkeuren</string>
-    <string name="drop_ticked_to_bottom">Drop ticked items to the bottom</string>
+    <string name="drop_ticked_to_bottom">Verplaats aangevinkte artikelen naar beneden</string>
     <string name="license_info">Dit is gratis software uitgebracht onder de GPL.</string>
     <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Exporteer gegevens</string>
