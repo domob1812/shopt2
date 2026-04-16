@@ -356,6 +356,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         
         int result = db.update(TABLE_ITEMS, values, ITEM_ID + "=?", 
                               new String[]{String.valueOf(item.getId())});
+
+        // Keep the name in the shopping list in sync
+        ContentValues slValues = new ContentValues();
+        slValues.put(SL_NAME, item.getName());
+        db.update(TABLE_SHOPPING_LIST, slValues, SL_ITEM_ID + "=?",
+                  new String[]{String.valueOf(item.getId())});
+
         return result > 0;
     }
 
