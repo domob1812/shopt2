@@ -1,1 +1,2 @@
 * Fixed a bug where item names wouldn't update if already on the shopping list
+* Added an option to sort items or shops alphabetically

@@ -102,4 +102,5 @@
     <string name="demo_item_nails">Clous</string>
     <string name="demo_item_hammer">Marteau</string>
     <string name="demo_item_cookies">Biscuits</string>
+    <string name="sort_alphabetically">Trier par ordre alphabétique</string>
 </resources>

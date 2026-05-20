@@ -210,8 +210,25 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         } else if (itemId == R.id.action_delete_checked) {
             deleteCheckedItems();
             return true;
+        } else if (itemId == R.id.action_sort_alphabetically) {
+            sortItemsAlphabetically();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sortItemsAlphabetically() {
+        if (items == null || items.isEmpty()) {
+            return;
+        }
+        items.sort((i1, i2) -> i1.getName().compareToIgnoreCase(i2.getName()));
+
+        List<Long> newOrder = new ArrayList<>();
+        for (Item item : items) {
+            newOrder.add(item.getId());
+        }
+        databaseHelper.reorderItems(shopId, newOrder);
+        itemEditAdapter.updateItems(items);
     }
 
     @Override

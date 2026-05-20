@@ -16,4 +16,9 @@
         app:showAsAction="ifRoom"
         android:contentDescription="@string/cd_delete_checked_items" />
 
+    <item
+        android:id="@+id/action_sort_alphabetically"
+        android:title="@string/sort_alphabetically"
+        app:showAsAction="never" />
+
 </menu>

@@ -103,4 +103,5 @@
     <string name="demo_item_nails">Nails</string>
     <string name="demo_item_hammer">Hammer</string>
     <string name="demo_item_cookies">Cookies</string>
+    <string name="sort_alphabetically">Sort alphabetically</string>
 </resources>

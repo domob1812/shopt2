@@ -3,6 +3,7 @@ package eu.domob.shopt2;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -139,12 +140,36 @@ public class ShopEditActivity extends BaseActivity implements ShopEditAdapter.On
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.shop_edit_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
             finish();
+            return true;
+        } else if (itemId == R.id.action_sort_alphabetically) {
+            sortShopsAlphabetically();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sortShopsAlphabetically() {
+        if (shops == null || shops.isEmpty()) {
+            return;
+        }
+        shops.sort((s1, s2) -> s1.getName().compareToIgnoreCase(s2.getName()));
+
+        List<Long> newOrder = new ArrayList<>();
+        for (Shop shop : shops) {
+            newOrder.add(shop.getId());
+        }
+        databaseHelper.reorderShops(newOrder);
+        shopEditAdapter.updateShops(shops);
     }
 
     @Override
