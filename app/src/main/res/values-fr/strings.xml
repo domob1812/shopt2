@@ -103,4 +103,5 @@
     <string name="demo_item_hammer">Marteau</string>
     <string name="demo_item_cookies">Biscuits</string>
     <string name="sort_alphabetically">Trier par ordre alphabétique</string>
+    <string name="share_shopping_list">Partager la liste de courses</string>
 </resources>

@@ -103,4 +103,5 @@
     <string name="demo_item_hammer">Hamer</string>
     <string name="demo_item_cookies">Koekjes</string>
     <string name="sort_alphabetically">Alfabetisch sorteren</string>
+    <string name="share_shopping_list">Boodschappenlijst delen</string>
 </resources>

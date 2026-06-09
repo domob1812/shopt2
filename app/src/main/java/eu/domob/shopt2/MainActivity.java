@@ -369,6 +369,9 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
         } else if (id == R.id.action_import) {
             importData();
             return true;
+        } else if (id == R.id.action_share_text) {
+            shareAsText();
+            return true;
         } else if (id == R.id.action_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
@@ -453,6 +456,42 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
             Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+    }
+
+    private void shareAsText() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+
+        for (Shop shop : shops) {
+            List<ShoppingListItem> items = databaseHelper.getShoppingListForShop(shop.getId(), false);
+            if (items.isEmpty()) {
+                continue;
+            }
+
+            if (!first) {
+                sb.append("\n");
+            }
+            first = false;
+
+            sb.append(shop.getName()).append(":\n");
+
+            for (ShoppingListItem item : items) {
+                sb.append("  - ").append(item.getName());
+
+                String quantity = item.getQuantity();
+                if (quantity != null && !quantity.trim().isEmpty()) {
+                    sb.append(" (").append(quantity.trim()).append(")");
+                }
+
+                sb.append("\n");
+            }
+        }
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, sb.toString().trim());
+
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_shopping_list)));
     }
 
     private void importData() {

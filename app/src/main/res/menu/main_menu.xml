@@ -24,6 +24,11 @@
         android:contentDescription="@string/cd_edit_shops" />
 
     <item
+        android:id="@+id/action_share_text"
+        android:title="@string/share_shopping_list"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_export"
         android:title="@string/export_data"
         app:showAsAction="never" />
