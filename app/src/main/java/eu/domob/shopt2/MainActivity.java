@@ -324,7 +324,15 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
 
     private void loadData() {
         shops = databaseHelper.getAllShops();
-        shopCardAdapter.updateShops(shops);
+
+        // Only the main shopping-list screen moves shops with no currently
+        // listed items to the bottom; all other places use the configured order.
+        List<Shop> displayShops = new ArrayList<>(shops);
+        displayShops.sort((s1, s2) -> Boolean.compare(
+                databaseHelper.getShoppingListForShop(s1.getId(), false).isEmpty(),
+                databaseHelper.getShoppingListForShop(s2.getId(), false).isEmpty()));
+        shopCardAdapter.updateShops(displayShops);
+
         updateAutoComplete();
 
         if (shops.isEmpty()) {
