@@ -1,6 +1,7 @@
 package eu.domob.shopt2;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -37,6 +38,12 @@ public class ShopEditActivity extends BaseActivity implements ShopEditAdapter.On
         initViews();
         setupToolbar();
         setupRecyclerView();
+        loadData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadData();
     }
 
@@ -170,6 +177,14 @@ public class ShopEditActivity extends BaseActivity implements ShopEditAdapter.On
         }
         databaseHelper.reorderShops(newOrder);
         shopEditAdapter.updateShops(shops);
+    }
+
+    @Override
+    public void onEditItems(Shop shop) {
+        Intent intent = new Intent(this, ItemsEditActivity.class);
+        intent.putExtra("shopId", shop.getId());
+        intent.putExtra("shopName", shop.getName());
+        startActivity(intent);
     }
 
     @Override

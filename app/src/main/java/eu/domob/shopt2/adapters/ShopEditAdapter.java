@@ -18,6 +18,7 @@ import java.util.List;
 public class ShopEditAdapter extends RecyclerView.Adapter<ShopEditAdapter.ShopEditViewHolder> {
 
     public interface OnShopEditListener {
+        void onEditItems(Shop shop);
         void onEditShop(Shop shop);
         void onDeleteShop(Shop shop);
         void onShopMoved(int fromPosition, int toPosition);
@@ -79,6 +80,7 @@ public class ShopEditAdapter extends RecyclerView.Adapter<ShopEditAdapter.ShopEd
         private TextView tvShopName;
         private TextView tvItemCount;
         private ImageView ivDragHandle;
+        private ImageButton btnEditItems;
         private ImageButton btnEditShop;
         private ImageButton btnDeleteShop;
 
@@ -87,6 +89,7 @@ public class ShopEditAdapter extends RecyclerView.Adapter<ShopEditAdapter.ShopEd
             tvShopName = itemView.findViewById(R.id.tvShopName);
             tvItemCount = itemView.findViewById(R.id.tvItemCount);
             ivDragHandle = itemView.findViewById(R.id.ivDragHandle);
+            btnEditItems = itemView.findViewById(R.id.btnEditItems);
             btnEditShop = itemView.findViewById(R.id.btnEditShop);
             btnDeleteShop = itemView.findViewById(R.id.btnDeleteShop);
         }
@@ -96,6 +99,12 @@ public class ShopEditAdapter extends RecyclerView.Adapter<ShopEditAdapter.ShopEd
             
             int itemCount = databaseHelper.getItemCountForShop(shop.getId());
             tvItemCount.setText(context.getResources().getQuantityString(R.plurals.item_count, itemCount, itemCount));
+
+            btnEditItems.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onEditItems(shop);
+                }
+            });
 
             btnEditShop.setOnClickListener(v -> {
                 if (listener != null) {

@@ -63,7 +63,7 @@
                 android:id="@+id/btnEditItems"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_edit"
+                android:src="@drawable/ic_format_list_bulleted"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/cd_edit_items"
                 android:layout_margin="2dp"
