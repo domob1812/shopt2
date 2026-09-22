@@ -64,6 +64,7 @@
     <string name="already_on_shopping_list">%s ist bereits auf der Einkaufsliste</string>
     <string name="all_items_unchecked">Alle Häkchen entfernt</string>
     <string name="checked_items_cleared">Erledigte Artikel entfernt</string>
+    <string name="item_added">Artikel hinzugefügt</string>
     <string name="item_name_empty">Der Artikelname darf nicht leer sein</string>
     <string name="no_items_selected">Keine Artikel ausgewählt</string>
     <string name="delete_items">Artikel löschen</string>

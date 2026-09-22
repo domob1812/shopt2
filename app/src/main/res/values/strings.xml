@@ -65,6 +65,7 @@
     <string name="already_on_shopping_list">%s is already on the shopping list</string>
     <string name="all_items_unchecked">All items unchecked</string>
     <string name="checked_items_cleared">Checked items cleared</string>
+    <string name="item_added">Item added</string>
     <string name="item_name_empty">Item name cannot be empty</string>
     <string name="no_items_selected">No items selected</string>
     <string name="delete_items">Delete Items</string>

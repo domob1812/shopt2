@@ -3,3 +3,4 @@ UI/UX improvements:
 * New preference to hide empty shops from the shopping list entirely
 * Added an explicit "edit items" button to each shop in the shop
   management screen
+* Improved dialog handling for adding/editing items and shops

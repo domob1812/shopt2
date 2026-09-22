@@ -64,6 +64,7 @@
     <string name="already_on_shopping_list">%s est déjà sur la liste de courses</string>
     <string name="all_items_unchecked">Tous les articles décochés</string>
     <string name="checked_items_cleared">Articles cochés supprimés</string>
+    <string name="item_added">Article ajouté</string>
     <string name="item_name_empty">Le nom de l\'article ne peut pas être vide</string>
     <string name="no_items_selected">Aucun article sélectionné</string>
     <string name="delete_items">Supprimer les articles</string>

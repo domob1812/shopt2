@@ -123,6 +123,12 @@ public class ShopEditActivity extends BaseActivity implements ShopEditAdapter.On
         
         // Set focus on the input field and show keyboard
         etShopName.requestFocus();
+
+        // Trigger the primary action (add/save) when "enter" is pressed
+        etShopName.setOnEditorActionListener((v, actionId, event) -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+            return true;
+        });
     }
 
     private void showDeleteShopDialog(Shop shop) {

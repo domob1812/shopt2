@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import eu.domob.shopt2.adapters.ItemEditAdapter;
 import eu.domob.shopt2.data.DatabaseHelper;
 import eu.domob.shopt2.data.Item;
@@ -98,34 +99,52 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
 
-        EditText editText = new EditText(this);
-        editText.setHint(R.string.item_name);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_item, null);
+        TextInputEditText editText = dialogView.findViewById(R.id.etItemName);
         if (existingItem != null) {
             editText.setText(existingItem.getName());
+            editText.setSelection(editText.getText().length());
         }
-        builder.setView(editText);
+        builder.setView(dialogView);
 
-        builder.setPositiveButton(existingItem == null ? R.string.add : R.string.save, (dialog, which) -> {
-            String itemName = editText.getText().toString().trim();
-            if (TextUtils.isEmpty(itemName)) {
-                Toast.makeText(this, R.string.item_name_empty, Toast.LENGTH_SHORT).show();
-                return;
-            }
+        boolean isAdd = existingItem == null;
+        builder.setPositiveButton(isAdd ? R.string.add : R.string.save, null);
+        builder.setNegativeButton(R.string.cancel, null);
 
-            if (existingItem == null) {
-                // Add new item
-                Item newItem = new Item(itemName, shopId, items.size());
-                databaseHelper.addItem(newItem);
-            } else {
-                // Update existing item
-                existingItem.setName(itemName);
-                databaseHelper.updateItem(existingItem);
-            }
-            loadData();
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            View.OnClickListener submit = v -> {
+                String itemName = editText.getText().toString().trim();
+                if (TextUtils.isEmpty(itemName)) {
+                    Toast.makeText(this, R.string.item_name_empty, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (isAdd) {
+                    // Add new item and keep the dialog open for the next entry
+                    Item newItem = new Item(itemName, shopId, items.size());
+                    databaseHelper.addItem(newItem);
+                    loadData();
+                    Toast.makeText(this, R.string.item_added, Toast.LENGTH_SHORT).show();
+                    editText.setText("");
+                } else {
+                    // Update existing item and close the dialog
+                    existingItem.setName(itemName);
+                    databaseHelper.updateItem(existingItem);
+                    loadData();
+                    dialog.dismiss();
+                }
+            };
+            positiveButton.setOnClickListener(submit);
+            editText.setOnEditorActionListener((v, actionId, event) -> {
+                submit.onClick(v);
+                return true;
+            });
         });
 
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.show();
+        dialog.show();
+        editText.requestFocus();
     }
 
     private void addCheckedItemsToShoppingList() {
