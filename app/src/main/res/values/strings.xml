@@ -42,6 +42,8 @@
     <string name="about">About</string>
     <string name="preferences">Preferences</string>
     <string name="drop_ticked_to_bottom">Drop ticked items to the bottom</string>
+    <string name="hide_empty_shops">Hide empty shops</string>
+    <string name="no_items_on_list">No items on the shopping list</string>
     <string name="license_info">This app is free software released under the GPL.</string>
     <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Export data</string>

@@ -41,6 +41,8 @@
     <string name="about">Over</string>
     <string name="preferences">Voorkeuren</string>
     <string name="drop_ticked_to_bottom">Verplaats aangevinkte artikelen naar beneden</string>
+    <string name="hide_empty_shops">Lege winkels verbergen</string>
+    <string name="no_items_on_list">Geen artikelen op de boodschappenlijst</string>
     <string name="license_info">Dit is gratis software uitgebracht onder de GPL.</string>
     <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Exporteer gegevens</string>
