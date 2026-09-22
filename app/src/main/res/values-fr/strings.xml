@@ -41,6 +41,8 @@
     <string name="about">À propos</string>
     <string name="preferences">Préférences</string>
     <string name="drop_ticked_to_bottom">Déplacer les articles cochés vers le bas</string>
+    <string name="hide_empty_shops">Masquer les magasins vides</string>
+    <string name="no_items_on_list">Aucun article sur la liste de courses</string>
     <string name="license_info">Cette application est un logiciel libre publié sous la GPL.</string>
     <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Exporter les données</string>

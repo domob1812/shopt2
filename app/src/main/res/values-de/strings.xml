@@ -41,6 +41,8 @@
     <string name="about">Über die App</string>
     <string name="preferences">Einstellungen</string>
     <string name="drop_ticked_to_bottom">Erledigte Artikel nach unten verschieben</string>
+    <string name="hide_empty_shops">Leere Läden ausblenden</string>
+    <string name="no_items_on_list">Keine Artikel auf der Einkaufsliste</string>
     <string name="license_info">Diese App ist freie Software und steht unter der GPL.</string>
     <string name="github_link" translatable="false">https://github.com/domob1812/shopt2</string>
     <string name="export_data">Daten exportieren</string>

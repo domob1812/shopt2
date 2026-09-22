@@ -324,10 +324,27 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
 
     private void loadData() {
         shops = databaseHelper.getAllShops();
-        shopCardAdapter.updateShops(shops);
+
+        // Only the main shopping-list screen moves shops with no currently
+        // listed items to the bottom; all other places use the configured order.
+        SharedPreferences prefs = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        boolean hideEmptyShops = prefs.getBoolean("hide_empty_shops", false);
+
+        List<Shop> displayShops = new ArrayList<>(shops);
+        if (hideEmptyShops) {
+            displayShops.removeIf(shop ->
+                    databaseHelper.getShoppingListForShop(shop.getId(), false).isEmpty());
+        } else {
+            displayShops.sort((s1, s2) -> Boolean.compare(
+                    databaseHelper.getShoppingListForShop(s1.getId(), false).isEmpty(),
+                    databaseHelper.getShoppingListForShop(s2.getId(), false).isEmpty()));
+        }
+        shopCardAdapter.updateShops(displayShops);
+
         updateAutoComplete();
 
-        if (shops.isEmpty()) {
+        if (displayShops.isEmpty()) {
+            tvEmptyState.setText(shops.isEmpty() ? R.string.no_shops_message : R.string.no_items_on_list);
             tvEmptyState.setVisibility(View.VISIBLE);
             recyclerViewShops.setVisibility(View.GONE);
         } else {

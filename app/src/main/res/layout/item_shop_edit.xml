@@ -46,6 +46,16 @@
     </LinearLayout>
 
     <ImageButton
+        android:id="@+id/btnEditItems"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="1dp"
+        android:src="@drawable/ic_format_list_bulleted"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_edit_items"
+        android:tint="?attr/colorOnSurfaceVariant" />
+
+    <ImageButton
         android:id="@+id/btnEditShop"
         android:layout_width="36dp"
         android:layout_height="36dp"

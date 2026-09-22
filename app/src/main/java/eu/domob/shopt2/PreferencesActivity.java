@@ -15,6 +15,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 public class PreferencesActivity extends BaseActivity {
 
     private MaterialSwitch switchDropTicked;
+    private MaterialSwitch switchHideEmpty;
     private LinearLayout themePreference;
     private TextView tvThemeValue;
     private SharedPreferences prefs;
@@ -41,7 +42,9 @@ public class PreferencesActivity extends BaseActivity {
         themePreference = findViewById(R.id.themePreference);
         tvThemeValue = findViewById(R.id.tvThemeValue);
         switchDropTicked = findViewById(R.id.switchDropTicked);
+        switchHideEmpty = findViewById(R.id.switchHideEmpty);
         LinearLayout dropTickedPreference = findViewById(R.id.dropTickedPreference);
+        LinearLayout hideEmptyShopsPreference = findViewById(R.id.hideEmptyShopsPreference);
         
         updateThemeValue();
         
@@ -56,6 +59,17 @@ public class PreferencesActivity extends BaseActivity {
         
         switchDropTicked.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("drop_ticked_to_bottom", isChecked).apply();
+        });
+        
+        boolean hideEmptyShops = prefs.getBoolean("hide_empty_shops", false);
+        switchHideEmpty.setChecked(hideEmptyShops);
+        
+        hideEmptyShopsPreference.setOnClickListener(v -> {
+            switchHideEmpty.toggle();
+        });
+        
+        switchHideEmpty.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("hide_empty_shops", isChecked).apply();
         });
     }
 
