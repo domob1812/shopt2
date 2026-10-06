@@ -4,3 +4,4 @@ UI/UX improvements:
 * Added an explicit "edit items" button to each shop in the shop
   management screen
 * Improved dialog handling for adding/editing items and shops
+* Fixed default focus/keyboard on the main screen

@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -21,6 +23,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,13 +52,36 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
     private ImportHelper importHelper;
     private ActivityResultLauncher<Intent> saveFileLauncher;
     private ActivityResultLauncher<Intent> openFileLauncher;
+    private boolean wasImeVisible = false;
+    private boolean isResumed = false;
+
+    // Deferred so that an IME hide caused by the activity being paused (which
+    // happens right after) can cancel it; see onPause().  Only an explicit
+    // dismissal while we stay in the foreground actually clears the focus.
+    private final Runnable clearInputFocusRunnable = () -> {
+        if (isResumed && etItemName != null && etItemName.hasFocus()) {
+            etItemName.clearFocus();
+            View root = findViewById(R.id.rootLayout);
+            if (root != null) {
+                root.requestFocus();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // On a fresh start, keep the item input from grabbing focus (and
+        // showing the soft keyboard) by default.  When the activity is
+        // restored, the previously focused view is kept instead.
+        if (savedInstanceState == null) {
+            findViewById(R.id.rootLayout).requestFocus();
+        }
+
         initViews();
+        setupImeDismissHandling();
         setupToolbar();
         setupRecyclerView();
         setupAddItemInput();
@@ -67,7 +94,18 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
     @Override
     protected void onResume() {
         super.onResume();
+        isResumed = true;
         loadData();
+    }
+
+    @Override
+    protected void onPause() {
+        isResumed = false;
+        View root = findViewById(R.id.rootLayout);
+        if (root != null) {
+            root.removeCallbacks(clearInputFocusRunnable);
+        }
+        super.onPause();
     }
 
     private void initViews() {
@@ -78,6 +116,48 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
         databaseHelper = DatabaseHelper.getInstance(this);
         exportHelper = new ExportHelper(this);
         importHelper = new ImportHelper(this);
+    }
+
+    private void setupImeDismissHandling() {
+        // When the user explicitly dismisses the soft keyboard while the item
+        // input is focused, drop focus back to the neutral root view.  Without
+        // this, the input keeps focus and the keyboard reopens on the next
+        // resume.  Only react to a visible -> hidden transition, and only while
+        // our window still has focus, so backgrounding with the keyboard open
+        // keeps focus (and the keyboard returning on resume), as before.  A
+        // physical keyboard is left untouched.
+        View root = findViewById(R.id.rootLayout);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+            boolean hasHardKeyboard = getResources().getConfiguration().keyboard
+                    != Configuration.KEYBOARD_NOKEYS;
+            if (imeVisible) {
+                // Keyboard (re)appeared, so any pending clear is stale.
+                v.removeCallbacks(clearInputFocusRunnable);
+            } else if (wasImeVisible && v.hasWindowFocus()
+                    && etItemName.hasFocus() && !hasHardKeyboard) {
+                // Visible -> hidden while still foregrounded: the user hid
+                // the keyboard.  Defer the clear so a pause/background that
+                // hides the IME at the same time can cancel it.
+                v.removeCallbacks(clearInputFocusRunnable);
+                v.postDelayed(clearInputFocusRunnable, 150);
+            }
+
+            // Android 15+ enforces edge-to-edge and no longer resizes the
+            // window for the IME, so reserve the bottom space ourselves;
+            // otherwise the keyboard overlaps the list and hidden items
+            // cannot be scrolled into view.  Older versions resize the window
+            // via windowSoftInputMode="adjustResize" instead.
+            int imeBottom = Build.VERSION.SDK_INT >= 35
+                    ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
+            if (v.getPaddingBottom() != imeBottom) {
+                v.setPadding(v.getPaddingLeft(), v.getPaddingTop(),
+                        v.getPaddingRight(), imeBottom);
+            }
+
+            wasImeVisible = imeVisible;
+            return insets;
+        });
     }
 
     private void setupToolbar() {

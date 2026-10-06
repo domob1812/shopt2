@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "eu.domob.shopt2"
-        minSdk 21
+        minSdk 23
         targetSdk 35
         versionCode 7
         versionName "2.5.0"
