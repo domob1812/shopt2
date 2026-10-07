@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "shopt.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table names
     private static final String TABLE_SHOPS = "shops";
@@ -36,7 +36,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SL_NAME = "name";
     private static final String SL_SHOP_ID = "shop_id";
     private static final String SL_IS_CHECKED = "is_checked";
-    private static final String SL_ORDER_INDEX = "order_index";
     private static final String SL_IS_AD_HOC = "is_ad_hoc";
     private static final String SL_QUANTITY = "quantity";
 
@@ -57,12 +56,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ")";
 
     private static final String CREATE_SHOPPING_LIST_TABLE = "CREATE TABLE " + TABLE_SHOPPING_LIST + " ("
-            + SL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SL_ID + " INTEGER PRIMARY KEY, "
             + SL_ITEM_ID + " INTEGER, "
             + SL_NAME + " TEXT NOT NULL, "
             + SL_SHOP_ID + " INTEGER NOT NULL, "
             + SL_IS_CHECKED + " INTEGER DEFAULT 0, "
-            + SL_ORDER_INDEX + " INTEGER DEFAULT 0, "
             + SL_IS_AD_HOC + " INTEGER DEFAULT 0, "
             + SL_QUANTITY + " TEXT DEFAULT '', "
             + "FOREIGN KEY(" + SL_SHOP_ID + ") REFERENCES " + TABLE_SHOPS + "(" + SHOP_ID + ") ON DELETE CASCADE, "
@@ -99,6 +97,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + TABLE_SHOPS + " ADD COLUMN " + SHOP_IS_COLLAPSED + " INTEGER DEFAULT 0");
+        }
+        if (oldVersion < 3) {
+            // Drop the unused shopping_list.order_index column.  SQLite cannot
+            // remove a column on the Android versions we support, so rebuild the
+            // table.  A plain INTEGER PRIMARY KEY (no AUTOINCREMENT) is used so
+            // that id assignment does not depend on sqlite_sequence surviving
+            // the rename on older SQLite builds.
+            String newTable = TABLE_SHOPPING_LIST + "_new";
+            db.execSQL("CREATE TABLE " + newTable + " ("
+                    + SL_ID + " INTEGER PRIMARY KEY, "
+                    + SL_ITEM_ID + " INTEGER, "
+                    + SL_NAME + " TEXT NOT NULL, "
+                    + SL_SHOP_ID + " INTEGER NOT NULL, "
+                    + SL_IS_CHECKED + " INTEGER DEFAULT 0, "
+                    + SL_IS_AD_HOC + " INTEGER DEFAULT 0, "
+                    + SL_QUANTITY + " TEXT DEFAULT '', "
+                    + "FOREIGN KEY(" + SL_SHOP_ID + ") REFERENCES " + TABLE_SHOPS + "(" + SHOP_ID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY(" + SL_ITEM_ID + ") REFERENCES " + TABLE_ITEMS + "(" + ITEM_ID + ") ON DELETE CASCADE"
+                    + ")");
+            db.execSQL("INSERT INTO " + newTable + " ("
+                    + SL_ID + ", " + SL_ITEM_ID + ", " + SL_NAME + ", " + SL_SHOP_ID + ", "
+                    + SL_IS_CHECKED + ", " + SL_IS_AD_HOC + ", " + SL_QUANTITY + ") "
+                    + "SELECT " + SL_ID + ", " + SL_ITEM_ID + ", " + SL_NAME + ", " + SL_SHOP_ID + ", "
+                    + SL_IS_CHECKED + ", " + SL_IS_AD_HOC + ", " + SL_QUANTITY + " FROM " + TABLE_SHOPPING_LIST);
+            db.execSQL("DROP TABLE " + TABLE_SHOPPING_LIST);
+            db.execSQL("ALTER TABLE " + newTable + " RENAME TO " + TABLE_SHOPPING_LIST);
         }
     }
 
@@ -162,7 +186,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             slValues.put(SL_ITEM_ID, milkId);
             slValues.put(SL_NAME, milk);
             slValues.put(SL_SHOP_ID, groceryId);
-            slValues.put(SL_ORDER_INDEX, 0);
             slValues.put(SL_IS_AD_HOC, 0);
             db.insert(TABLE_SHOPPING_LIST, null, slValues);
         }
@@ -177,7 +200,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             slValues.put(SL_ITEM_ID, eggsId);
             slValues.put(SL_NAME, eggs);
             slValues.put(SL_SHOP_ID, groceryId);
-            slValues.put(SL_ORDER_INDEX, 2);
             slValues.put(SL_IS_AD_HOC, 0);
             db.insert(TABLE_SHOPPING_LIST, null, slValues);
         }
@@ -192,7 +214,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             slValues.put(SL_ITEM_ID, nailsId);
             slValues.put(SL_NAME, nails);
             slValues.put(SL_SHOP_ID, hardwareId);
-            slValues.put(SL_ORDER_INDEX, 0);
             slValues.put(SL_IS_AD_HOC, 0);
             db.insert(TABLE_SHOPPING_LIST, null, slValues);
         }
@@ -202,7 +223,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         slValues.clear();
         slValues.put(SL_NAME, cookies);
         slValues.put(SL_SHOP_ID, groceryId);
-        slValues.put(SL_ORDER_INDEX, 999);
         slValues.put(SL_IS_AD_HOC, 1);
         db.insert(TABLE_SHOPPING_LIST, null, slValues);
     }
@@ -430,7 +450,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         slValues.put(SL_NAME, name);
                         slValues.put(SL_SHOP_ID, targetShopId);
                         slValues.put(SL_IS_CHECKED, 0);
-                        slValues.put(SL_ORDER_INDEX, orderIndex);
                         slValues.put(SL_IS_AD_HOC, 0);
                         slValues.put(SL_QUANTITY, transfer.getQuantity());
                         db.insert(TABLE_SHOPPING_LIST, null, slValues);
@@ -440,7 +459,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     slValues.put(SL_NAME, name);
                     slValues.put(SL_SHOP_ID, targetShopId);
                     slValues.put(SL_IS_CHECKED, 0);
-                    slValues.put(SL_ORDER_INDEX, 999);
                     slValues.put(SL_IS_AD_HOC, 1);
                     slValues.put(SL_QUANTITY, transfer.getQuantity());
                     db.insert(TABLE_SHOPPING_LIST, null, slValues);
@@ -501,7 +519,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(SL_NAME, item.getName());
         values.put(SL_SHOP_ID, item.getShopId());
         values.put(SL_IS_CHECKED, item.isChecked() ? 1 : 0);
-        values.put(SL_ORDER_INDEX, item.getOrderIndex());
         values.put(SL_IS_AD_HOC, item.isAdHoc() ? 1 : 0);
         values.put(SL_QUANTITY, item.getQuantity());
         
@@ -517,7 +534,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Use a raw query with a LEFT JOIN to fetch and sort items efficiently in one go.
         // Sorting logic:
         // 1. If dropTickedToBottom is true: Sort by checked state (unchecked first)
-        // 2. Regular items (is_ad_hoc = 0) appear before ad-hoc items (is_ad_hoc = 1).
+        // 2. Regular items (is_ad_hoc = 0) appear before ad-hoc items (is_ad_hoc = 1),
+        //    so ad-hoc items are always placed at the bottom regardless of other order.
         // 3. Regular items are sorted by their predefined order_index from the items table.
         // 4. Ad-hoc items are sorted by their name.
         String orderByClause;
@@ -528,7 +546,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         String query = "SELECT sl." + SL_ID + ", sl." + SL_ITEM_ID + ", sl." + SL_NAME + ", sl." + SL_SHOP_ID +
-                ", sl." + SL_IS_CHECKED + ", sl." + SL_ORDER_INDEX + ", sl." + SL_IS_AD_HOC +
+                ", sl." + SL_IS_CHECKED + ", sl." + SL_IS_AD_HOC +
                 ", sl." + SL_QUANTITY +
                 " FROM " + TABLE_SHOPPING_LIST + " sl" +
                 " LEFT JOIN " + TABLE_ITEMS + " i ON sl." + SL_ITEM_ID + " = i." + ITEM_ID +
@@ -550,7 +568,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 item.setName(cursor.getString(cursor.getColumnIndexOrThrow(SL_NAME)));
                 item.setShopId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_SHOP_ID)));
                 item.setChecked(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_CHECKED)) == 1);
-                item.setOrderIndex(cursor.getInt(cursor.getColumnIndexOrThrow(SL_ORDER_INDEX)));
                 item.setAdHoc(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_AD_HOC)) == 1);
                 item.setQuantity(cursor.getString(cursor.getColumnIndexOrThrow(SL_QUANTITY)));
                 items.add(item);
@@ -570,7 +587,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(SL_NAME, item.getName());
         values.put(SL_SHOP_ID, item.getShopId());
         values.put(SL_IS_CHECKED, item.isChecked() ? 1 : 0);
-        values.put(SL_ORDER_INDEX, item.getOrderIndex());
         values.put(SL_IS_AD_HOC, item.isAdHoc() ? 1 : 0);
         values.put(SL_QUANTITY, item.getQuantity());
         
@@ -660,7 +676,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             item.setName(cursor.getString(cursor.getColumnIndexOrThrow(SL_NAME)));
             item.setShopId(cursor.getLong(cursor.getColumnIndexOrThrow(SL_SHOP_ID)));
             item.setChecked(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_CHECKED)) == 1);
-            item.setOrderIndex(cursor.getInt(cursor.getColumnIndexOrThrow(SL_ORDER_INDEX)));
             item.setAdHoc(cursor.getInt(cursor.getColumnIndexOrThrow(SL_IS_AD_HOC)) == 1);
             item.setQuantity(cursor.getString(cursor.getColumnIndexOrThrow(SL_QUANTITY)));
         }

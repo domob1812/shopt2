@@ -138,7 +138,7 @@ public class ImportHelper {
                         databaseHelper.addToShoppingList(shoppingItem);
                     }
                 } else if (importItem.onList) {
-                    ShoppingListItem shoppingItem = new ShoppingListItem(importItem.name, shopId, 999, true);
+                    ShoppingListItem shoppingItem = new ShoppingListItem(importItem.name, shopId, true);
                     shoppingItem.setQuantity(importItem.quantity);
                     databaseHelper.addToShoppingList(shoppingItem);
                 }

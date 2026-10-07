@@ -330,7 +330,7 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
                 newId = databaseHelper.addToShoppingList(shoppingItem);
             } else {
                 // Add as ad-hoc item to shopping list only
-                ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
+                ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), true);
                 newId = databaseHelper.addToShoppingList(shoppingItem);
             }
             
