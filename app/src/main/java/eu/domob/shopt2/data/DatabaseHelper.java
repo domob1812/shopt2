@@ -368,6 +368,113 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result > 0;
     }
 
+    /**
+     * Copies or moves the given items to {@code targetShopId} in a single transaction.
+     *
+     * <p>For each transfer, any existing entry with the same name in the target shop is
+     * removed first (configured items and their shopping-list entries via the foreign-key
+     * cascade, plus any ad-hoc shopping-list entries). Then the item is added to the target
+     * shop; configured items that are on the shopping list keep their quantity on the new
+     * shop's list. If {@code move} is true, the original item and its list entry are removed
+     * afterwards. Transfers whose source is already the target shop are skipped.</p>
+     */
+    public void moveOrCopyItems(List<ItemTransfer> transfers, long targetShopId, boolean move) {
+        if (transfers == null || transfers.isEmpty()) {
+            return;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ItemTransfer transfer : transfers) {
+                if (transfer.getSourceShopId() == targetShopId) {
+                    continue;
+                }
+
+                String name = transfer.getName();
+
+                // Remove any existing configured item with the same name in the target shop.
+                // The foreign-key cascade also removes its shopping-list entry.
+                List<Long> existingItemIds = new ArrayList<>();
+                Cursor cursor = db.query(TABLE_ITEMS, new String[]{ITEM_ID},
+                        ITEM_SHOP_ID + "=? AND " + ITEM_NAME + " COLLATE NOCASE = ?",
+                        new String[]{String.valueOf(targetShopId), name}, null, null, null);
+                if (cursor.moveToFirst()) {
+                    do {
+                        existingItemIds.add(cursor.getLong(0));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                for (long existingId : existingItemIds) {
+                    db.delete(TABLE_ITEMS, ITEM_ID + "=?",
+                            new String[]{String.valueOf(existingId)});
+                }
+
+                // Remove any remaining shopping-list entries (e.g. ad-hoc ones) with that name.
+                db.delete(TABLE_SHOPPING_LIST,
+                        SL_SHOP_ID + "=? AND " + SL_NAME + " COLLATE NOCASE = ?",
+                        new String[]{String.valueOf(targetShopId), name});
+
+                // Add the item to the target shop.
+                if (transfer.getItemId() != null) {
+                    int orderIndex = getItemCountForShop(db, targetShopId);
+                    ContentValues itemValues = new ContentValues();
+                    itemValues.put(ITEM_NAME, name);
+                    itemValues.put(ITEM_SHOP_ID, targetShopId);
+                    itemValues.put(ITEM_ORDER_INDEX, orderIndex);
+                    long newItemId = db.insert(TABLE_ITEMS, null, itemValues);
+
+                    if (transfer.getShoppingListItemId() != null) {
+                        ContentValues slValues = new ContentValues();
+                        slValues.put(SL_ITEM_ID, newItemId);
+                        slValues.put(SL_NAME, name);
+                        slValues.put(SL_SHOP_ID, targetShopId);
+                        slValues.put(SL_IS_CHECKED, 0);
+                        slValues.put(SL_ORDER_INDEX, orderIndex);
+                        slValues.put(SL_IS_AD_HOC, 0);
+                        slValues.put(SL_QUANTITY, transfer.getQuantity());
+                        db.insert(TABLE_SHOPPING_LIST, null, slValues);
+                    }
+                } else {
+                    ContentValues slValues = new ContentValues();
+                    slValues.put(SL_NAME, name);
+                    slValues.put(SL_SHOP_ID, targetShopId);
+                    slValues.put(SL_IS_CHECKED, 0);
+                    slValues.put(SL_ORDER_INDEX, 999);
+                    slValues.put(SL_IS_AD_HOC, 1);
+                    slValues.put(SL_QUANTITY, transfer.getQuantity());
+                    db.insert(TABLE_SHOPPING_LIST, null, slValues);
+                }
+
+                // If moving, remove the original item / list entry.
+                if (move) {
+                    if (transfer.getItemId() != null) {
+                        db.delete(TABLE_ITEMS, ITEM_ID + "=?",
+                                new String[]{String.valueOf(transfer.getItemId())});
+                    } else if (transfer.getShoppingListItemId() != null) {
+                        db.delete(TABLE_SHOPPING_LIST, SL_ID + "=?",
+                                new String[]{String.valueOf(transfer.getShoppingListItemId())});
+                    }
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private int getItemCountForShop(SQLiteDatabase db, long shopId) {
+        Cursor cursor = db.query(TABLE_ITEMS, new String[]{"COUNT(*)"},
+                                ITEM_SHOP_ID + "=?", new String[]{String.valueOf(shopId)},
+                                null, null, null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
     public void reorderItems(long shopId, List<Long> newOrder) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();

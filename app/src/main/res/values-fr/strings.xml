@@ -107,4 +107,17 @@
     <string name="demo_item_cookies">Biscuits</string>
     <string name="sort_alphabetically">Trier par ordre alphabétique</string>
     <string name="share_shopping_list">Partager la liste de courses</string>
+    <string name="copy_or_move">Copier ou déplacer</string>
+    <string name="copy">Copier</string>
+    <string name="target_shop">Magasin cible</string>
+    <string name="apply">Appliquer</string>
+    <string name="no_target_shop">Aucun magasin cible disponible</string>
+    <plurals name="items_moved">
+        <item quantity="one">%d article déplacé</item>
+        <item quantity="other">%d articles déplacés</item>
+    </plurals>
+    <plurals name="items_copied">
+        <item quantity="one">%d article copié</item>
+        <item quantity="other">%d articles copiés</item>
+    </plurals>
 </resources>
