@@ -148,12 +148,18 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
             // window for the IME, so reserve the bottom space ourselves;
             // otherwise the keyboard overlaps the list and hidden items
             // cannot be scrolled into view.  Older versions resize the window
-            // via windowSoftInputMode="adjustResize" instead.
-            int imeBottom = Build.VERSION.SDK_INT >= 35
-                    ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
-            if (v.getPaddingBottom() != imeBottom) {
+            // via windowSoftInputMode="adjustResize" instead.  While the
+            // keyboard is hidden the navigation bar still overlaps the
+            // content, so reserve space for whichever inset is larger.
+            int bottomInset = 0;
+            if (Build.VERSION.SDK_INT >= 35) {
+                int imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                int navBarBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                bottomInset = Math.max(imeBottom, navBarBottom);
+            }
+            if (v.getPaddingBottom() != bottomInset) {
                 v.setPadding(v.getPaddingLeft(), v.getPaddingTop(),
-                        v.getPaddingRight(), imeBottom);
+                        v.getPaddingRight(), bottomInset);
             }
 
             wasImeVisible = imeVisible;
