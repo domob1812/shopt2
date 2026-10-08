@@ -33,6 +33,7 @@ import eu.domob.shopt2.adapters.ShoppingListAdapter;
 import eu.domob.shopt2.adapters.ShopSelectionAdapter;
 import eu.domob.shopt2.data.DatabaseHelper;
 import eu.domob.shopt2.data.Item;
+import eu.domob.shopt2.data.ItemTransfer;
 import eu.domob.shopt2.data.Shop;
 import eu.domob.shopt2.data.ShoppingListItem;
 import java.util.ArrayList;
@@ -147,12 +148,18 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
             // window for the IME, so reserve the bottom space ourselves;
             // otherwise the keyboard overlaps the list and hidden items
             // cannot be scrolled into view.  Older versions resize the window
-            // via windowSoftInputMode="adjustResize" instead.
-            int imeBottom = Build.VERSION.SDK_INT >= 35
-                    ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
-            if (v.getPaddingBottom() != imeBottom) {
+            // via windowSoftInputMode="adjustResize" instead.  While the
+            // keyboard is hidden the navigation bar still overlaps the
+            // content, so reserve space for whichever inset is larger.
+            int bottomInset = 0;
+            if (Build.VERSION.SDK_INT >= 35) {
+                int imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                int navBarBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                bottomInset = Math.max(imeBottom, navBarBottom);
+            }
+            if (v.getPaddingBottom() != bottomInset) {
                 v.setPadding(v.getPaddingLeft(), v.getPaddingTop(),
-                        v.getPaddingRight(), imeBottom);
+                        v.getPaddingRight(), bottomInset);
             }
 
             wasImeVisible = imeVisible;
@@ -323,7 +330,7 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
                 newId = databaseHelper.addToShoppingList(shoppingItem);
             } else {
                 // Add as ad-hoc item to shopping list only
-                ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), 999, true);
+                ShoppingListItem shoppingItem = new ShoppingListItem(itemName, shop.getId(), true);
                 newId = databaseHelper.addToShoppingList(shoppingItem);
             }
             
@@ -456,6 +463,9 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
             return true;
         } else if (id == R.id.action_clear_checked) {
             clearCheckedItems();
+            return true;
+        } else if (id == R.id.action_copy_move) {
+            copyOrMoveCheckedItems();
             return true;
         } else if (id == R.id.action_preferences) {
             startActivity(new Intent(this, PreferencesActivity.class));
@@ -648,6 +658,30 @@ public class MainActivity extends BaseActivity implements ShopCardAdapter.OnShop
         databaseHelper.uncheckAllItems();
         loadData();
         Toast.makeText(this, R.string.all_items_unchecked, Toast.LENGTH_SHORT).show();
+    }
+
+    private void copyOrMoveCheckedItems() {
+        List<ItemTransfer> transfers = new ArrayList<>();
+        for (Shop shop : shops) {
+            List<ShoppingListItem> listItems = databaseHelper.getShoppingListForShop(shop.getId(), false);
+            for (ShoppingListItem listItem : listItems) {
+                if (listItem.isChecked()) {
+                    transfers.add(new ItemTransfer(
+                            listItem.getItemId(),
+                            listItem.getId(),
+                            listItem.getName(),
+                            listItem.getShopId(),
+                            listItem.getQuantity()));
+                }
+            }
+        }
+
+        if (transfers.isEmpty()) {
+            Toast.makeText(this, R.string.no_items_selected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        CopyMoveDialog.show(this, transfers, shops, this::loadData);
     }
 
     private void clearCheckedItems() {

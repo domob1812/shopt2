@@ -107,4 +107,17 @@
     <string name="demo_item_cookies">Koekjes</string>
     <string name="sort_alphabetically">Alfabetisch sorteren</string>
     <string name="share_shopping_list">Boodschappenlijst delen</string>
+    <string name="copy_or_move">Kopiëren of verplaatsen</string>
+    <string name="copy">Kopiëren</string>
+    <string name="target_shop">Doelwinkel</string>
+    <string name="apply">Toepassen</string>
+    <string name="no_target_shop">Geen doelwinkel beschikbaar</string>
+    <plurals name="items_moved">
+        <item quantity="one">%d artikel verplaatst</item>
+        <item quantity="other">%d artikelen verplaatst</item>
+    </plurals>
+    <plurals name="items_copied">
+        <item quantity="one">%d artikel gekopieerd</item>
+        <item quantity="other">%d artikelen gekopieerd</item>
+    </plurals>
 </resources>

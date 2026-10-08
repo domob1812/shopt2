@@ -21,4 +21,9 @@
         android:title="@string/sort_alphabetically"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_copy_move"
+        android:title="@string/copy_or_move"
+        app:showAsAction="never" />
+
 </menu>

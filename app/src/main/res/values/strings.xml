@@ -108,4 +108,17 @@
     <string name="demo_item_cookies">Cookies</string>
     <string name="sort_alphabetically">Sort alphabetically</string>
     <string name="share_shopping_list">Share shopping list</string>
+    <string name="copy_or_move">Copy or move</string>
+    <string name="copy">Copy</string>
+    <string name="target_shop">Target shop</string>
+    <string name="apply">Apply</string>
+    <string name="no_target_shop">No target shop available</string>
+    <plurals name="items_moved">
+        <item quantity="one">%d item moved</item>
+        <item quantity="other">%d items moved</item>
+    </plurals>
+    <plurals name="items_copied">
+        <item quantity="one">%d item copied</item>
+        <item quantity="other">%d items copied</item>
+    </plurals>
 </resources>

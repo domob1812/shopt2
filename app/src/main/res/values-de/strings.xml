@@ -107,4 +107,17 @@
     <string name="demo_item_cookies">Kekse</string>
     <string name="sort_alphabetically">Alphabetisch sortieren</string>
     <string name="share_shopping_list">Einkaufsliste teilen</string>
+    <string name="copy_or_move">Kopieren oder verschieben</string>
+    <string name="copy">Kopieren</string>
+    <string name="target_shop">Zielladen</string>
+    <string name="apply">Anwenden</string>
+    <string name="no_target_shop">Kein Zielladen verfügbar</string>
+    <plurals name="items_moved">
+        <item quantity="one">%d Artikel verschoben</item>
+        <item quantity="other">%d Artikel verschoben</item>
+    </plurals>
+    <plurals name="items_copied">
+        <item quantity="one">%d Artikel kopiert</item>
+        <item quantity="other">%d Artikel kopiert</item>
+    </plurals>
 </resources>

@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import eu.domob.shopt2.adapters.ItemEditAdapter;
 import eu.domob.shopt2.data.DatabaseHelper;
 import eu.domob.shopt2.data.Item;
+import eu.domob.shopt2.data.ItemTransfer;
 import eu.domob.shopt2.data.ShoppingListItem;
 import eu.domob.shopt2.utils.ItemTouchHelperCallback;
 import java.util.ArrayList;
@@ -174,6 +175,33 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
         Toast.makeText(this, getResources().getQuantityString(R.plurals.items_added_to_shopping_list, addedCount, addedCount), Toast.LENGTH_SHORT).show();
     }
 
+    private void copyOrMoveCheckedItems() {
+        Set<Long> checkedItemIds = itemEditAdapter.getCheckedItems();
+        if (checkedItemIds.isEmpty()) {
+            Toast.makeText(this, R.string.no_items_selected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<ItemTransfer> transfers = new ArrayList<>();
+        for (Item item : items) {
+            if (!checkedItemIds.contains(item.getId())) {
+                continue;
+            }
+            ShoppingListItem shoppingItem = databaseHelper.getShoppingListItemByItemId(item.getId());
+            transfers.add(new ItemTransfer(
+                    item.getId(),
+                    shoppingItem != null ? shoppingItem.getId() : null,
+                    item.getName(),
+                    item.getShopId(),
+                    shoppingItem != null ? shoppingItem.getQuantity() : ""));
+        }
+
+        CopyMoveDialog.show(this, transfers, databaseHelper.getAllShops(), () -> {
+            itemEditAdapter.clearCheckedItems();
+            loadData();
+        });
+    }
+
     private void deleteCheckedItems() {
         Set<Long> checkedItemIds = itemEditAdapter.getCheckedItems();
         if (checkedItemIds.isEmpty()) {
@@ -228,6 +256,9 @@ public class ItemsEditActivity extends BaseActivity implements ItemEditAdapter.O
             return true;
         } else if (itemId == R.id.action_delete_checked) {
             deleteCheckedItems();
+            return true;
+        } else if (itemId == R.id.action_copy_move) {
+            copyOrMoveCheckedItems();
             return true;
         } else if (itemId == R.id.action_sort_alphabetically) {
             sortItemsAlphabetically();
